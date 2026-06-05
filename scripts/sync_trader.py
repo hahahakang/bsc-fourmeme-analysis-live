@@ -309,6 +309,7 @@ def summarize_live_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     if not events:
         return {
             "latest_event_time_utc": "",
+            "latest_event_block": 0,
             "live_event_count": 0,
             "live_buy_count": 0,
             "live_sell_count": 0,
@@ -318,6 +319,7 @@ def summarize_live_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         }
     return {
         "latest_event_time_utc": max(event.get("time_utc", "") for event in events),
+        "latest_event_block": max(int(to_float(event.get("block_number"))) for event in events),
         "live_event_count": len(events),
         "live_buy_count": sum(1 for event in events if event.get("event") == "buy"),
         "live_sell_count": sum(1 for event in events if event.get("event") == "sell"),
@@ -465,6 +467,7 @@ def run_rpc_sync(env: dict[str, str], start_block_arg: int | None = None) -> Liv
     recent_blocks = int(env.get("RPC_RECENT_BLOCKS_PER_RUN", "300000"))
     current_block = int(rpc_call(rpc_url, "eth_blockNumber", []), 16)
     safe_end = max(DEFAULT_START_BLOCK, current_block - CONFIRMATION_BLOCKS)
+    scanned_time = get_block_time_cache(rpc_url, [safe_end]).get(safe_end, "")
     last_block_path = STATE / "last_rpc_block.txt"
     if start_block_arg is not None:
         start_block = start_block_arg
@@ -510,6 +513,7 @@ def run_rpc_sync(env: dict[str, str], start_block_arg: int | None = None) -> Liv
             "tracked_wallet": wallet,
             "rpc_url": rpc_url,
             "latest_scanned_block": safe_end,
+            "latest_scanned_time_utc": scanned_time,
             "latest_completed_block": scan_end,
             "rpc_from_block": start_block,
             "rpc_to_block": scan_end,

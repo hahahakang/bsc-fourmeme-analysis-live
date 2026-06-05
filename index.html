@@ -419,6 +419,35 @@
       return value.length > 16 ? value.slice(0, 8) + "..." + value.slice(-6) : value;
     }
 
+    function utcToBeijing(value) {
+      if (!value) return "";
+      const normalized = String(value).includes("T") ? String(value) : String(value).replace(" ", "T") + "Z";
+      const date = new Date(normalized);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleString("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      });
+    }
+
+    function estimateScannedTime(summary) {
+      const eventBlock = Number(summary.latest_event_block || 0);
+      const scannedBlock = Number(summary.latest_scanned_block || summary.rpc_safe_tip_block || 0);
+      const eventTime = summary.latest_event_time_utc;
+      if (!eventBlock || !scannedBlock || !eventTime || scannedBlock < eventBlock) return "";
+      const normalized = String(eventTime).replace(" ", "T") + "Z";
+      const eventDate = new Date(normalized);
+      if (Number.isNaN(eventDate.getTime())) return "";
+      const estimate = new Date(eventDate.getTime() + (scannedBlock - eventBlock) * 750);
+      return utcToBeijing(estimate.toISOString());
+    }
+
     function rowHtml(cells) {
       return "<tr>" + cells.map((c) => "<td>" + c + "</td>").join("") + "</tr>";
     }
@@ -436,13 +465,15 @@
 
     function renderLiveStatus(summary) {
       const status = document.querySelector("#liveStatus");
+      const scannedTime = summary.latest_scanned_time_utc ? utcToBeijing(summary.latest_scanned_time_utc) : estimateScannedTime(summary);
       status.innerHTML = [
-        ["生成时间", summary.generated_at_utc || ""],
+        ["生成时间", utcToBeijing(summary.generated_at_utc || "")],
         ["模式", summary.mode || ""],
         ["状态", summary.sync_status || ""],
-        ["历史最后交易", summary.data_window ? summary.data_window.last_trade_time_utc : ""],
-        ["RPC最新事件", summary.latest_event_time_utc || ""],
-        ["已扫block", summary.latest_completed_block || summary.latest_scanned_block || ""],
+        ["最后交易 北京", utcToBeijing(summary.latest_event_time_utc || "")],
+        ["已扫描到 北京", scannedTime || "等待下一次同步"],
+        ["已扫最新block", summary.latest_scanned_block || summary.rpc_safe_tip_block || ""],
+        ["历史补扫block", summary.latest_completed_block || ""],
         ["剩余block", summary.rpc_blocks_remaining || 0]
       ].map(([label, value]) => "<span class=\"status-pill\">" + label + " <strong>" + value + "</strong></span>").join("");
     }
