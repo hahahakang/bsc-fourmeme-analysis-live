@@ -33,6 +33,7 @@ jobs:
           FOURMEME_PROGRAM_MODE: rpc
           RPC_LOG_CHUNK_SIZE: "50000"
           RPC_MAX_BLOCKS_PER_RUN: "50000"
+          RPC_RECENT_BLOCKS_PER_RUN: "300000"
         run: python3 scripts/sync_trader.py --mode rpc
 
       - name: Commit refreshed data to main

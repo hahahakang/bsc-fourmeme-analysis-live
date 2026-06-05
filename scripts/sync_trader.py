@@ -14,6 +14,7 @@ import csv
 import json
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -169,12 +170,19 @@ def get_block_time_cache(rpc_url: str, block_numbers: Iterable[int]) -> dict[int
         cache = {int(k): v for k, v in json.loads(cache_path.read_text(encoding="utf-8")).items()}
     else:
         cache = {}
-    for block_number in sorted(set(block_numbers)):
-        if block_number in cache:
-            continue
+    missing_blocks = [block_number for block_number in sorted(set(block_numbers)) if block_number not in cache]
+
+    def fetch_block_time(block_number: int) -> tuple[int, str]:
         block = rpc_call(rpc_url, "eth_getBlockByNumber", [hex(block_number), False])
-        if block:
-            cache[block_number] = iso_from_block_ts(block["timestamp"])
+        return block_number, iso_from_block_ts(block["timestamp"]) if block else ""
+
+    if missing_blocks:
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            futures = {executor.submit(fetch_block_time, block_number): block_number for block_number in missing_blocks}
+            for future in as_completed(futures):
+                block_number, block_time = future.result()
+                if block_time:
+                    cache[block_number] = block_time
     write_json(cache_path, {str(k): v for k, v in sorted(cache.items())})
     return cache
 
@@ -267,6 +275,17 @@ def fetch_swap_logs(rpc_url: str, wallet: str, start_block: int, end_block: int,
                 raise
             chunk_size = max(500, chunk_size // 2)
     return logs
+
+
+def decode_logs_to_events(rpc_url: str, logs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    block_times = get_block_time_cache(rpc_url, [int(log.get("blockNumber", "0x0"), 16) for log in logs])
+    events: list[dict[str, Any]] = []
+    for log in logs:
+        block_number = int(log.get("blockNumber", "0x0"), 16)
+        event = decode_swap_log(log, block_times.get(block_number, ""))
+        if event:
+            events.append(event)
+    return events
 
 
 def load_existing_live_events() -> list[dict[str, Any]]:
@@ -443,6 +462,7 @@ def run_rpc_sync(env: dict[str, str], start_block_arg: int | None = None) -> Liv
     rpc_url = choose_rpc_url(env.get("BSC_RPC_URL", DEFAULT_RPC_URL) or DEFAULT_RPC_URL, wallet)
     chunk_size = int(env.get("RPC_LOG_CHUNK_SIZE", "200"))
     max_blocks = int(env.get("RPC_MAX_BLOCKS_PER_RUN", "5000"))
+    recent_blocks = int(env.get("RPC_RECENT_BLOCKS_PER_RUN", "300000"))
     current_block = int(rpc_call(rpc_url, "eth_blockNumber", []), 16)
     safe_end = max(DEFAULT_START_BLOCK, current_block - CONFIRMATION_BLOCKS)
     last_block_path = STATE / "last_rpc_block.txt"
@@ -456,20 +476,21 @@ def run_rpc_sync(env: dict[str, str], start_block_arg: int | None = None) -> Liv
 
     package = build_offline_package()
     existing_events = load_existing_live_events()
-    fetched_logs: list[dict[str, Any]] = []
-    decoded_events: list[dict[str, Any]] = []
+    backfill_logs: list[dict[str, Any]] = []
+    recent_logs: list[dict[str, Any]] = []
+    decoded_backfill_events: list[dict[str, Any]] = []
+    decoded_recent_events: list[dict[str, Any]] = []
+    recent_start = max(DEFAULT_START_BLOCK + 1, safe_end - recent_blocks + 1)
+    if recent_start <= safe_end:
+        recent_logs = fetch_swap_logs(rpc_url, wallet, recent_start, safe_end, chunk_size)
+        decoded_recent_events = decode_logs_to_events(rpc_url, recent_logs)
     if start_block <= scan_end:
-        fetched_logs = fetch_swap_logs(rpc_url, wallet, start_block, scan_end, chunk_size)
-        block_times = get_block_time_cache(rpc_url, [int(log.get("blockNumber", "0x0"), 16) for log in fetched_logs])
-        for log in fetched_logs:
-            block_number = int(log.get("blockNumber", "0x0"), 16)
-            event = decode_swap_log(log, block_times.get(block_number, ""))
-            if event:
-                decoded_events.append(event)
+        backfill_logs = fetch_swap_logs(rpc_url, wallet, start_block, scan_end, chunk_size)
+        decoded_backfill_events = decode_logs_to_events(rpc_url, backfill_logs)
         last_block_path.parent.mkdir(parents=True, exist_ok=True)
         last_block_path.write_text(str(scan_end), encoding="utf-8")
 
-    live_events = dedupe_events([*existing_events, *decoded_events])
+    live_events = dedupe_events([*existing_events, *decoded_recent_events, *decoded_backfill_events])
     write_json(
         DATA / "live_events.json",
         {
@@ -495,8 +516,13 @@ def run_rpc_sync(env: dict[str, str], start_block_arg: int | None = None) -> Liv
             "rpc_safe_tip_block": safe_end,
             "rpc_blocks_remaining": max(0, safe_end - scan_end),
             "rpc_max_blocks_per_run": max_blocks,
-            "rpc_new_log_count": len(fetched_logs),
-            "rpc_new_event_count": len(decoded_events),
+            "rpc_recent_from_block": recent_start,
+            "rpc_recent_to_block": safe_end,
+            "rpc_recent_blocks_per_run": recent_blocks,
+            "rpc_recent_log_count": len(recent_logs),
+            "rpc_recent_event_count": len(decoded_recent_events),
+            "rpc_new_log_count": len(backfill_logs) + len(recent_logs),
+            "rpc_new_event_count": len(decoded_backfill_events) + len(decoded_recent_events),
         }
     )
     if event_summary["latest_event_time_utc"]:

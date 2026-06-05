@@ -25,4 +25,9 @@ Open `http://127.0.0.1:8780/`.
 
 GitHub Actions already runs the same sync every five minutes. It scans Four.meme Swap logs for the tracked wallet, stores progress in `data/state/last_rpc_block.txt`, and publishes new JSON/CSV facts back to the site.
 
+Each run scans two windows:
+
+- a recent window controlled by `RPC_RECENT_BLOCKS_PER_RUN`, so new trades appear quickly;
+- a historical backfill window controlled by `RPC_MAX_BLOCKS_PER_RUN`, so older gaps are filled safely without overloading public RPC endpoints.
+
 Important: this watcher covers Four.meme Swap events. If the trader uses another router or CEX/aggregator contract, that requires a transaction indexer/API in addition to raw BSC RPC.
