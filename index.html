@@ -205,6 +205,7 @@
         <a class="button" href="data/buy_detail_with_fdv.csv">下载买入明细 CSV</a>
         <a class="button" href="data/token_trade_summary.csv">下载 token 汇总 CSV</a>
         <a class="button primary" href="data/live_trades.json">下载实时数据包 JSON</a>
+        <a class="button" href="data/live_events.csv">下载最新链上事件 CSV</a>
       </div>
     </div>
   </header>
@@ -239,6 +240,18 @@
         <div class="metric"><strong>等待数据</strong><span>运行 scripts/sync_trader.py 后刷新</span></div>
       </div>
       <p class="muted">当前版本先把“买入事实 + token 级买卖汇总”同步上站；逐笔卖出需要接入 BSC RPC receipt/Four.meme 事件解码后补齐。</p>
+      <p class="muted">现在已接入 BSC RPC 自动扫描：固定跟踪 <code>0x55976c6818e4794f3e2e7179eea2cc2202811e11</code>，按每 5 分钟任务设计，解析 Four.meme Swap 事件中的买入和卖出。GitHub workflow 发布需要 token 额外开放 Workflows 写权限。</p>
+    </section>
+
+    <section>
+      <h2>最新链上买卖事实（RPC 自动同步）</h2>
+      <div class="table-scroll">
+        <table id="liveEventTable">
+          <thead><tr><th>时间 UTC</th><th>动作</th><th>token</th><th>BNB</th><th>token 数量</th><th>交易哈希</th><th>事实等级</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="muted">这一张表来自链上 RPC 日志，不需要手动导入。FDV 和流动性会在后续接入池子状态/价格源后继续补齐。</p>
     </section>
 
     <section class="grid-2">
@@ -427,7 +440,10 @@
         ["生成时间", summary.generated_at_utc || ""],
         ["模式", summary.mode || ""],
         ["状态", summary.sync_status || ""],
-        ["最后交易", summary.data_window ? summary.data_window.last_trade_time_utc : ""]
+        ["历史最后交易", summary.data_window ? summary.data_window.last_trade_time_utc : ""],
+        ["RPC最新事件", summary.latest_event_time_utc || ""],
+        ["已扫block", summary.latest_completed_block || summary.latest_scanned_block || ""],
+        ["剩余block", summary.rpc_blocks_remaining || 0]
       ].map(([label, value]) => "<span class=\"status-pill\">" + label + " <strong>" + value + "</strong></span>").join("");
     }
 
@@ -435,12 +451,34 @@
       const items = [
         ["已识别 token", num(summary.token_count, 0), "token 级交易汇总"],
         ["买入事实", num(summary.buy_event_count, 0), "已解码 CSV 买入记录"],
+        ["最新链上事件", num(summary.live_event_count || 0, 0), "RPC 自动同步买卖"],
         ["已实现收益", bnb.format(Number(summary.realized_pnl_bnb || 0)) + " BNB", "Four.meme 严格匹配口径"],
         ["未平仓", num(summary.open_position_count, 0), "未做当前价格标记"]
       ];
       document.querySelector("#liveMetrics").innerHTML = items.map(([title, value, note]) =>
         "<div class=\"metric\"><strong>" + value + "</strong><span>" + title + " / " + note + "</span></div>"
       ).join("");
+    }
+
+    function renderLiveEvents(rows) {
+      const body = document.querySelector("#liveEventTable tbody");
+      if (!rows || !rows.length) {
+        body.innerHTML = "<tr><td colspan=\"7\">等待下一次 RPC 自动同步</td></tr>";
+        return;
+      }
+      body.innerHTML = rows.slice(0, 80).map((r) => {
+        const event = r.event === "buy" ? "买入" : "卖出";
+        const clsName = r.event === "buy" ? "win" : "loss";
+        return rowHtml([
+          r.time_utc,
+          "<strong class=\"" + clsName + "\">" + event + "</strong>",
+          "<code>" + (r.symbol || r.token_short || shortHash(r.token)) + "</code>",
+          bnb.format(Number(r.bnb_amount || 0)),
+          num(r.token_amount, 2),
+          "<code>" + shortHash(r.tx_hash) + "</code>",
+          r.verification || "verified_from_rpc_swap_log"
+        ]);
+      }).join("");
     }
 
     function renderLiveBuys(rows) {
@@ -535,6 +573,7 @@
         renderLiveMetrics(liveSummary);
         renderLiveBuys(liveTrades.recent_buys || []);
         renderLivePositions(liveTrades.recent_positions || []);
+        renderLiveEvents(liveTrades.live_events || []);
       }
       renderBuckets(buckets);
       renderDetail(details);
