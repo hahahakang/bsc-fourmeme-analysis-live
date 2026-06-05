@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BSC Four.meme 交易员链上分析</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --ink: #17202a;
+      --muted: #64748b;
+      --line: #d8e0ea;
+      --accent: #136f63;
+      --accent-soft: #dff5ee;
+      --loss: #b42318;
+      --win: #087443;
+      --warn: #985a00;
+      --blue: #245b9c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+      line-height: 1.55;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      padding: 24px;
+    }
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 4vw, 38px);
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+    p { margin: 0 0 10px; }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px 16px 40px;
+      display: grid;
+      gap: 14px;
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfe;
+      min-height: 92px;
+    }
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .live-status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 4px 10px;
+      background: #fbfcfe;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .status-pill strong { color: var(--ink); margin-left: 4px; }
+    a.button, button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 8px 12px;
+      text-decoration: none;
+      font: inherit;
+      cursor: pointer;
+    }
+    a.button.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-variant-numeric: tabular-nums;
+    }
+    th {
+      color: var(--muted);
+      background: #f8fafc;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    .table-scroll {
+      max-height: 460px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .win { color: var(--win); }
+    .loss { color: var(--loss); }
+    .muted { color: var(--muted); }
+    .warn { color: var(--warn); }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+    }
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    input, select {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font: inherit;
+      background: #fff;
+    }
+    input { min-width: min(360px, 100%); }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+    @media (max-width: 860px) {
+      header { padding: 18px 14px; }
+      .summary, .grid-2 { grid-template-columns: 1fr; }
+      section { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>BSC Four.meme 交易员链上分析</h1>
+      <p class="muted">持续盯盘开发版：基于已解码 CSV 重建历史交易，并预留 BscScan/RPC 增量同步入口。</p>
+      <div class="live-status" id="liveStatus">
+        <span class="status-pill">同步状态 <strong>加载中</strong></span>
+      </div>
+      <div class="actions">
+        <a class="button primary" href="downloads/bsc_blogger_trade_analysis.xlsx">下载完整 Excel</a>
+        <a class="button" href="data/buy_detail_with_fdv.csv">下载买入明细 CSV</a>
+        <a class="button" href="data/token_trade_summary.csv">下载 token 汇总 CSV</a>
+        <a class="button primary" href="data/live_trades.json">下载实时数据包 JSON</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>核心结论</h2>
+      <div class="summary">
+        <div class="metric"><strong class="win">+62.34 BNB</strong><span>严格 Four.meme 匹配口径净收益</span></div>
+        <div class="metric"><strong>2,965</strong><span>识别出的交易 token 数</span></div>
+        <div class="metric"><strong>4,156</strong><span>可重建的买入记录</span></div>
+        <div class="metric"><strong>0-50k</strong><span>主要赚钱节点</span></div>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div>
+        <h2>一句话判断</h2>
+        <p>该地址的主要优势不是追高，而是非常早期的内盘买入。<strong>0-50k FDV 桶贡献了 +97.72 BNB</strong>，覆盖了其他节点的大部分亏损。</p>
+        <p>胜率并不高，0-50k 桶胜率约 40.7%，中位数仍为小亏；它更像是高频广撒网，靠少数大赔率标的拉高总体收益。</p>
+      </div>
+      <div>
+        <h2>口径说明</h2>
+        <p>买入市值用成交价乘以 token 总供应量近似，属于 FDV 口径，不等于严格流通市值。</p>
+        <p>收益为已匹配 Four.meme 交易的链上现金流，未对未卖出的残余持仓做当前价格标记。</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>持续同步模块</h2>
+      <div class="summary" id="liveMetrics">
+        <div class="metric"><strong>等待数据</strong><span>运行 scripts/sync_trader.py 后刷新</span></div>
+      </div>
+      <p class="muted">当前版本先把“买入事实 + token 级买卖汇总”同步上站；逐笔卖出需要接入 BSC RPC receipt/Four.meme 事件解码后补齐。</p>
+    </section>
+
+    <section class="grid-2">
+      <div>
+        <h2>最近买入事实</h2>
+        <div class="table-scroll">
+          <table id="liveBuyTable">
+            <thead><tr><th>时间 UTC</th><th>token</th><th>买入 BNB</th><th>FDV</th><th>桶</th><th>事实等级</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <h2>最近持仓/卖出汇总</h2>
+        <div class="table-scroll">
+          <table id="livePositionTable">
+            <thead><tr><th>最后交易 UTC</th><th>token</th><th>买/卖</th><th>收益 BNB</th><th>ROI</th><th>状态</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>买入市值分桶结果</h2>
+      <div class="table-scroll">
+        <table id="bucketTable">
+          <thead>
+            <tr>
+              <th>桶</th>
+              <th>token 数</th>
+              <th>胜率</th>
+              <th>总买入 BNB</th>
+              <th>总卖出 BNB</th>
+              <th>总收益 BNB</th>
+              <th>最大盈利</th>
+              <th>最大亏损</th>
+              <th>未平仓数</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>买入明细抽样</h2>
+      <div class="filters">
+        <select id="bucketFilter">
+          <option value="">全部市值桶</option>
+          <option value="0-50k">0-50k</option>
+          <option value="50k-100k">50k-100k</option>
+          <option value="100k-200k">100k-200k</option>
+          <option value="200k-1m">200k-1m</option>
+          <option value="1m-5m">1m-5m</option>
+          <option value="5m+">5m+</option>
+        </select>
+        <input id="searchInput" placeholder="搜索 token 地址、符号或交易哈希">
+        <button type="button" id="resetBtn">重置</button>
+      </div>
+      <div class="table-scroll">
+        <table id="detailTable">
+          <thead>
+            <tr>
+              <th>买入时间 UTC</th>
+              <th>token</th>
+              <th>买入 BNB</th>
+              <th>买入 USD</th>
+              <th>买入 FDV</th>
+              <th>池子流动性估算</th>
+              <th>桶</th>
+              <th>交易哈希</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="muted">页面为轻量展示，只渲染前 300 条匹配记录；完整数据请下载 CSV 或 Excel。</p>
+    </section>
+
+    <section class="grid-2">
+      <div>
+        <h2>Top Winners</h2>
+        <div class="table-scroll">
+          <table id="winnerTable">
+            <thead><tr><th>token</th><th>首买 FDV</th><th>收益 BNB</th><th>ROI</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <h2>Top Losers</h2>
+        <div class="table-scroll">
+          <table id="loserTable">
+            <thead><tr><th>token</th><th>首买 FDV</th><th>收益 BNB</th><th>ROI</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>协作建议</h2>
+      <p>朋友可以重点复核三类问题：0-50k 桶里哪些币有共同特征；50k-200k 为什么明显负收益；高 FDV 亏损样本是否是中间币、稳定币或异常交易。</p>
+      <p class="warn">不要把这个报告当成投资建议。它是链上行为复盘，用来分析策略节点、风格和自动化可行性。</p>
+    </section>
+  </main>
+
+  <script>
+    const nf = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
+    const pf = new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 1 });
+    const bnb = new Intl.NumberFormat("en-US", { maximumFractionDigits: 4 });
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let field = "";
+      let quoted = false;
+      for (let i = 0; i < text.length; i += 1) {
+        const c = text[i];
+        const n = text[i + 1];
+        if (quoted) {
+          if (c === "\"" && n === "\"") {
+            field += "\"";
+            i += 1;
+          } else if (c === "\"") {
+            quoted = false;
+          } else {
+            field += c;
+          }
+        } else if (c === "\"") {
+          quoted = true;
+        } else if (c === ",") {
+          row.push(field);
+          field = "";
+        } else if (c === "\n") {
+          row.push(field);
+          rows.push(row);
+          row = [];
+          field = "";
+        } else if (c !== "\r") {
+          field += c;
+        }
+      }
+      if (field || row.length) {
+        row.push(field);
+        rows.push(row);
+      }
+      const header = rows.shift();
+      return rows.filter((r) => r.length === header.length).map((r) => Object.fromEntries(header.map((h, i) => [h, r[i]])));
+    }
+
+    function money(value) {
+      const n = Number(value);
+      return Number.isFinite(n) ? "$" + nf.format(n) : "";
+    }
+
+    function num(value, digits = 2) {
+      const n = Number(value);
+      return Number.isFinite(n) ? n.toLocaleString("en-US", { maximumFractionDigits: digits }) : "";
+    }
+
+    function shortHash(value) {
+      if (!value) return "";
+      return value.length > 16 ? value.slice(0, 8) + "..." + value.slice(-6) : value;
+    }
+
+    function rowHtml(cells) {
+      return "<tr>" + cells.map((c) => "<td>" + c + "</td>").join("") + "</tr>";
+    }
+
+    async function loadCsv(path) {
+      const res = await fetch(path);
+      return parseCsv(await res.text());
+    }
+
+    async function loadJson(path) {
+      const res = await fetch(path);
+      if (!res.ok) throw new Error(path + " not found");
+      return res.json();
+    }
+
+    function renderLiveStatus(summary) {
+      const status = document.querySelector("#liveStatus");
+      status.innerHTML = [
+        ["生成时间", summary.generated_at_utc || ""],
+        ["模式", summary.mode || ""],
+        ["状态", summary.sync_status || ""],
+        ["最后交易", summary.data_window ? summary.data_window.last_trade_time_utc : ""]
+      ].map(([label, value]) => "<span class=\"status-pill\">" + label + " <strong>" + value + "</strong></span>").join("");
+    }
+
+    function renderLiveMetrics(summary) {
+      const items = [
+        ["已识别 token", num(summary.token_count, 0), "token 级交易汇总"],
+        ["买入事实", num(summary.buy_event_count, 0), "已解码 CSV 买入记录"],
+        ["已实现收益", bnb.format(Number(summary.realized_pnl_bnb || 0)) + " BNB", "Four.meme 严格匹配口径"],
+        ["未平仓", num(summary.open_position_count, 0), "未做当前价格标记"]
+      ];
+      document.querySelector("#liveMetrics").innerHTML = items.map(([title, value, note]) =>
+        "<div class=\"metric\"><strong>" + value + "</strong><span>" + title + " / " + note + "</span></div>"
+      ).join("");
+    }
+
+    function renderLiveBuys(rows) {
+      document.querySelector("#liveBuyTable tbody").innerHTML = rows.slice(0, 40).map((r) => rowHtml([
+        r.time_utc,
+        "<code>" + (r.symbol || r.token_short) + "</code>",
+        bnb.format(Number(r.bnb_amount || 0)),
+        money(r.fdv_usd),
+        "<span class=\"pill\">" + r.bucket + "</span>",
+        r.verification
+      ])).join("");
+    }
+
+    function renderLivePositions(rows) {
+      document.querySelector("#livePositionTable tbody").innerHTML = rows.slice(0, 40).map((r) => {
+        const pnl = Number(r.realized_pnl_bnb || 0);
+        const status = r.open_position_flag ? "open" : "closed";
+        return rowHtml([
+          r.last_trade_time_utc,
+          "<code>" + (r.symbol || r.token_short) + "</code>",
+          r.buy_count + "/" + r.sell_count,
+          "<strong class=\"" + (pnl >= 0 ? "win" : "loss") + "\">" + bnb.format(pnl) + "</strong>",
+          num(Number(r.realized_roi || 0) * 100, 1) + "%",
+          status
+        ]);
+      }).join("");
+    }
+
+    function renderBuckets(rows) {
+      const body = document.querySelector("#bucketTable tbody");
+      body.innerHTML = rows.filter((r) => r.first_buy_bucket !== "unknown").map((r) => {
+        const pnl = Number(r.total_pnl_bnb);
+        return rowHtml([
+          "<span class=\"pill\">" + r.first_buy_bucket + "</span>",
+          r.tokens,
+          pf.format(Number(r.win_rate)),
+          bnb.format(Number(r.total_buy_bnb)),
+          bnb.format(Number(r.total_sell_bnb)),
+          "<strong class=\"" + (pnl >= 0 ? "win" : "loss") + "\">" + bnb.format(pnl) + "</strong>",
+          bnb.format(Number(r.max_pnl_bnb)),
+          bnb.format(Number(r.max_loss_bnb)),
+          r.open_positions
+        ]);
+      }).join("");
+    }
+
+    function renderDetail(rows) {
+      const bucket = document.querySelector("#bucketFilter").value;
+      const query = document.querySelector("#searchInput").value.trim().toLowerCase();
+      const filtered = rows.filter((r) => {
+        if (bucket && r.trade_fdv_bucket !== bucket) return false;
+        if (!query) return true;
+        return [r.token, r.symbol, r.name, r.tx_hash].join(" ").toLowerCase().includes(query);
+      }).slice(0, 300);
+      document.querySelector("#detailTable tbody").innerHTML = filtered.map((r) => rowHtml([
+        r.time_utc,
+        "<code>" + shortHash(r.token) + "</code>",
+        bnb.format(Number(r.bnb_amount)),
+        money(r.usd_amount),
+        money(r.trade_fdv_usd),
+        money(r.approx_pool_liquidity_usd_after),
+        "<span class=\"pill\">" + r.trade_fdv_bucket + "</span>",
+        "<code>" + shortHash(r.tx_hash) + "</code>"
+      ])).join("");
+    }
+
+    function renderRank(tableId, rows) {
+      document.querySelector("#" + tableId + " tbody").innerHTML = rows.slice(0, 20).map((r) => {
+        const pnl = Number(r.realized_pnl_bnb);
+        return rowHtml([
+          "<code>" + r.symbol_or_addr + "</code>",
+          money(r.first_buy_fdv_usd),
+          "<strong class=\"" + (pnl >= 0 ? "win" : "loss") + "\">" + bnb.format(pnl) + "</strong>",
+          num(Number(r.realized_roi) * 100, 1) + "%"
+        ]);
+      }).join("");
+    }
+
+    async function main() {
+      const [buckets, details, winners, losers] = await Promise.all([
+        loadCsv("data/fdv_bucket_summary.csv"),
+        loadCsv("data/buy_detail_with_fdv.csv"),
+        loadCsv("data/top_winners.csv"),
+        loadCsv("data/top_losers.csv")
+      ]);
+      const [liveSummary, liveTrades] = await Promise.all([
+        loadJson("data/live_summary.json").catch(() => null),
+        loadJson("data/live_trades.json").catch(() => null)
+      ]);
+      if (liveSummary && liveTrades) {
+        renderLiveStatus(liveSummary);
+        renderLiveMetrics(liveSummary);
+        renderLiveBuys(liveTrades.recent_buys || []);
+        renderLivePositions(liveTrades.recent_positions || []);
+      }
+      renderBuckets(buckets);
+      renderDetail(details);
+      renderRank("winnerTable", winners);
+      renderRank("loserTable", losers);
+      document.querySelector("#bucketFilter").addEventListener("change", () => renderDetail(details));
+      document.querySelector("#searchInput").addEventListener("input", () => renderDetail(details));
+      document.querySelector("#resetBtn").addEventListener("click", () => {
+        document.querySelector("#bucketFilter").value = "";
+        document.querySelector("#searchInput").value = "";
+        renderDetail(details);
+      });
+    }
+
+    main().catch((err) => {
+      document.body.insertAdjacentHTML("afterbegin", "<p style=\"padding:12px;color:#b42318\">数据加载失败：" + err.message + "</p>");
+    });
+  </script>
+</body>
+</html>

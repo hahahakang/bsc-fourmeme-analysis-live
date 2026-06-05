@@ -1,0 +1,31 @@
+{
+  "generated_at_utc": "2026-06-05T16:51:23Z",
+  "mode": "offline_csv_rebuild",
+  "sync_status": "ready_for_server_credentials",
+  "tracked_wallet": "",
+  "data_window": {
+    "first_buy_time_utc": "2026-01-26 11:14:34",
+    "last_trade_time_utc": "2026-06-01 07:24:04"
+  },
+  "token_count": 2965,
+  "buy_event_count": 4156,
+  "open_position_count": 205,
+  "realized_pnl_bnb": 62.34453574,
+  "win_rate": 0.401349,
+  "dominant_bucket": "0-50k",
+  "bucket_counts": {
+    "0-50k": 2841,
+    "1m-5m": 5,
+    "50k-100k": 63,
+    "100k-200k": 32,
+    "200k-1m": 17,
+    "5m+": 7
+  },
+  "next_required_inputs": [
+    "BSC_TRADER_WALLET",
+    "BSCSCAN_API_KEY",
+    "BSC_RPC_URL",
+    "Four.meme event decoder contract/topic map",
+    "server cron or systemd timer"
+  ]
+}
