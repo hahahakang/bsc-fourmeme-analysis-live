@@ -254,6 +254,35 @@
       <p class="muted">这一张表来自链上 RPC 日志，不需要手动导入。FDV 和流动性会在后续接入池子状态/价格源后继续补齐。</p>
     </section>
 
+    <section>
+      <h2>Server 监听器（10 秒提醒 / Paper 跟单）</h2>
+      <p class="muted">这一层给 VPS 常驻进程使用：每 10 秒或按新区块扫描，先发 Telegram/邮件/网页提醒。真实自动买入没有开启，当前只记录 paper 决策。</p>
+      <div class="summary" id="listenerMetrics">
+        <div class="metric"><strong>等待服务端</strong><span>运行 scripts/server_listener.py 后刷新</span></div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <h2>最近提醒</h2>
+          <div class="table-scroll">
+            <table id="listenerAlertTable">
+              <thead><tr><th>发现时间 UTC</th><th>交易时间 UTC</th><th>动作</th><th>token</th><th>BNB</th><th>决策</th><th>原因</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h2>Paper 跟单队列</h2>
+          <div class="table-scroll">
+            <table id="paperOrderTable">
+              <thead><tr><th>生成时间 UTC</th><th>动作</th><th>token</th><th>信号 BNB</th><th>paper BNB</th><th>决策</th><th>原因</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <p class="muted">默认规则：首买优先、限制信号 BNB、限制信号时效、FDV/流动性等待价格源接入、必须先完成卖出模拟。没有卖出模拟前不会进入真实自动买入。</p>
+    </section>
+
     <section class="grid-2">
       <div>
         <h2>最近买入事实</h2>
@@ -556,6 +585,51 @@
       }).join("");
     }
 
+    function renderListener(status, alertsPayload, paperPayload) {
+      const metrics = document.querySelector("#listenerMetrics");
+      const alerts = alertsPayload && alertsPayload.records ? alertsPayload.records : [];
+      const paperOrders = paperPayload && paperPayload.records ? paperPayload.records : [];
+      if (!status) {
+        metrics.innerHTML = "<div class=\"metric\"><strong>未启动</strong><span>等待 VPS 常驻监听器写入状态</span></div>";
+        document.querySelector("#listenerAlertTable tbody").innerHTML = "<tr><td colspan=\"7\">暂无 server 提醒</td></tr>";
+        document.querySelector("#paperOrderTable tbody").innerHTML = "<tr><td colspan=\"7\">暂无 paper 跟单记录</td></tr>";
+        return;
+      }
+      const rule = status.rule_summary || {};
+      const items = [
+        ["监听状态", status.mode || "server_listener", "最近更新 " + utcToBeijing(status.generated_at_utc || "")],
+        ["扫到 block", num(status.end_block || 0, 0), "落后 " + num(status.blocks_behind || 0, 0) + " blocks"],
+        ["本轮新提醒", num(status.new_alerts || 0, 0), "累计 " + num(status.total_alerts || alerts.length || 0, 0)],
+        ["Paper 状态", status.copytrade_status || "paper_only", "单笔 " + (rule.paper_bnb || 0) + " BNB"],
+        ["轮询间隔", num(status.poll_seconds || 0, 0) + " 秒", "确认 " + num(status.confirmations || 0, 0) + " blocks"]
+      ];
+      metrics.innerHTML = items.map(([title, value, note]) =>
+        "<div class=\"metric\"><strong>" + value + "</strong><span>" + title + " / " + note + "</span></div>"
+      ).join("");
+
+      const alertBody = document.querySelector("#listenerAlertTable tbody");
+      alertBody.innerHTML = alerts.length ? alerts.slice(0, 80).map((r) => rowHtml([
+        r.created_at_utc || "",
+        r.event_time_utc || "",
+        "<strong class=\"" + (r.event === "buy" ? "win" : "loss") + "\">" + (r.event === "buy" ? "买入" : "卖出") + "</strong>",
+        "<code>" + (r.token_short || shortHash(r.token || "")) + "</code>",
+        bnb.format(Number(r.bnb_amount || 0)),
+        r.decision || "",
+        r.reason || ""
+      ])).join("") : "<tr><td colspan=\"7\">暂无 server 提醒</td></tr>";
+
+      const paperBody = document.querySelector("#paperOrderTable tbody");
+      paperBody.innerHTML = paperOrders.length ? paperOrders.slice(0, 80).map((r) => rowHtml([
+        r.created_at_utc || "",
+        "<strong class=\"" + (r.event === "buy" ? "win" : "loss") + "\">" + (r.event === "buy" ? "买入" : "卖出") + "</strong>",
+        "<code>" + shortHash(r.token || "") + "</code>",
+        bnb.format(Number(r.signal_bnb || 0)),
+        bnb.format(Number(r.paper_bnb || 0)),
+        r.decision || "",
+        r.reason || ""
+      ])).join("") : "<tr><td colspan=\"7\">暂无 paper 跟单记录</td></tr>";
+    }
+
     function renderDetail(rows) {
       const bucket = document.querySelector("#bucketFilter").value;
       const query = document.querySelector("#searchInput").value.trim().toLowerCase();
@@ -599,6 +673,11 @@
         loadJson("data/live_summary.json").catch(() => null),
         loadJson("data/live_trades.json").catch(() => null)
       ]);
+      const [listenerStatus, listenerAlerts, paperOrders] = await Promise.all([
+        loadJson("data/server_listener_status.json").catch(() => null),
+        loadJson("data/server_listener_alerts.json").catch(() => null),
+        loadJson("data/server_paper_orders.json").catch(() => null)
+      ]);
       if (liveSummary && liveTrades) {
         renderLiveStatus(liveSummary);
         renderLiveMetrics(liveSummary);
@@ -606,6 +685,7 @@
         renderLivePositions(liveTrades.recent_positions || []);
         renderLiveEvents(liveTrades.live_events || []);
       }
+      renderListener(listenerStatus, listenerAlerts, paperOrders);
       renderBuckets(buckets);
       renderDetail(details);
       renderRank("winnerTable", winners);

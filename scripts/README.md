@@ -31,3 +31,72 @@ Each run scans two windows:
 - a historical backfill window controlled by `RPC_MAX_BLOCKS_PER_RUN`, so older gaps are filled safely without overloading public RPC endpoints.
 
 Important: this watcher covers Four.meme Swap events. If the trader uses another router or CEX/aggregator contract, that requires a transaction indexer/API in addition to raw BSC RPC.
+
+## Near-Real-Time Server Listener
+
+Use `server_listener.py` on a VPS when the goal is alerting or future copy-trade research. It is intentionally separate from GitHub Actions because Actions scheduling is not precise enough for trading.
+
+```bash
+cp .env.example .env
+python3 scripts/server_listener.py --once --no-alerts
+python3 scripts/server_listener.py
+```
+
+Default behavior:
+
+- polls every `LISTENER_POLL_SECONDS=10`;
+- scans a small moving block window with confirmation delay;
+- deduplicates events by tx hash and log index;
+- writes `data/server_listener_status.json`;
+- writes `data/server_listener_alerts.json` and `.csv`;
+- writes `data/server_paper_orders.json` and `.csv`;
+- sends console alerts by default;
+- can send Telegram, email, or webhook alerts after credentials are added.
+
+Example Telegram setup:
+
+```env
+LISTENER_NOTIFY_CHANNELS=console,json,web,telegram
+TELEGRAM_BOT_TOKEN=123456:xxxx
+TELEGRAM_CHAT_ID=123456789
+```
+
+Example email setup:
+
+```env
+LISTENER_NOTIFY_CHANNELS=console,json,web,email
+ALERT_EMAIL_TO=you@example.com
+ALERT_EMAIL_FROM=bot@example.com
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=bot@example.com
+SMTP_PASSWORD=your-app-password
+SMTP_STARTTLS=true
+```
+
+Example systemd unit:
+
+```ini
+[Unit]
+Description=BSC Four.meme live trader listener
+After=network-online.target
+
+[Service]
+WorkingDirectory=/srv/bsc-fourmeme-analysis-live
+ExecStart=/usr/bin/python3 scripts/server_listener.py
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Copy-trade rules are paper-only for now:
+
+- only considers buy events;
+- can require first-seen buy only;
+- filters by signal BNB size;
+- supports FDV bounds once market data is connected;
+- defaults to `COPYTRADE_REQUIRE_SELL_SIMULATION=true`, so no paper-follow candidate is emitted until a sell simulation module exists;
+- real trading is disabled in code. Add private-key execution only after the sample library is large enough and sell simulation passes.

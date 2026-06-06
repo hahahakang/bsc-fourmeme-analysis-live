@@ -1,7 +1,7 @@
 {
-  "generated_at_utc": "2026-06-06T12:16:53Z",
-  "mode": "rpc_auto_sync",
-  "sync_status": "rpc_swap_logs_verified",
+  "generated_at_utc": "2026-06-06T13:03:37Z",
+  "mode": "offline_csv_rebuild",
+  "sync_status": "ready_for_server_credentials",
   "tracked_wallet": "0x55976c6818e4794f3e2e7179eea2cc2202811e11",
   "data_window": {
     "first_buy_time_utc": "2026-01-26 11:14:34",
@@ -36,21 +36,5 @@
   "live_sell_count": 325,
   "live_buy_bnb": 112.86,
   "live_sell_bnb": 112.61141556,
-  "live_unique_tokens": 189,
-  "rpc_url": "https://bsc.rpc.blxrbdn.com",
-  "latest_scanned_block": 102646402,
-  "latest_scanned_time_utc": "2026-06-06 12:16:47",
-  "latest_completed_block": 102303164,
-  "rpc_from_block": 102253165,
-  "rpc_to_block": 102303164,
-  "rpc_safe_tip_block": 102646402,
-  "rpc_blocks_remaining": 343238,
-  "rpc_max_blocks_per_run": 50000,
-  "rpc_recent_from_block": 102566403,
-  "rpc_recent_to_block": 102646402,
-  "rpc_recent_blocks_per_run": 80000,
-  "rpc_recent_log_count": 44,
-  "rpc_recent_event_count": 44,
-  "rpc_new_log_count": 59,
-  "rpc_new_event_count": 59
+  "live_unique_tokens": 189
 }
