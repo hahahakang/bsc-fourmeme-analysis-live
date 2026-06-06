@@ -296,6 +296,13 @@ def load_existing_live_events() -> list[dict[str, Any]]:
     return payload.get("events", [])
 
 
+def load_existing_live_event_payload() -> dict[str, Any]:
+    path = DATA / "live_events.json"
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def dedupe_events(events: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     by_key: dict[tuple[str, int], dict[str, Any]] = {}
     for event in events:
@@ -327,6 +334,89 @@ def summarize_live_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         "live_sell_bnb": round(sum(to_float(event.get("bnb_amount")) for event in events if event.get("event") == "sell"), 8),
         "live_unique_tokens": len({event.get("token") for event in events if event.get("token")}),
     }
+
+
+def live_event_to_buy(event: dict[str, Any]) -> dict[str, Any]:
+    fdv = event.get("fdv_usd")
+    return {
+        "time_utc": event.get("time_utc", ""),
+        "event": "buy",
+        "token": event.get("token", ""),
+        "token_short": event.get("token_short") or short_addr(event.get("token", "")),
+        "symbol": event.get("symbol") or event.get("token_short") or short_addr(event.get("token", "")),
+        "bnb_amount": to_float(event.get("bnb_amount")),
+        "usd_amount": "",
+        "fdv_usd": to_float(fdv) if fdv not in {"", None} else "",
+        "bucket": event.get("bucket") or "live_pending_fdv",
+        "tx_hash": event.get("tx_hash", ""),
+        "verification": event.get("verification") or "verified_from_rpc_swap_log",
+    }
+
+
+def summarize_token_live_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_token: dict[str, dict[str, Any]] = {}
+    for event in sorted(events, key=lambda row: (row.get("time_utc", ""), int(to_float(row.get("log_index"))))):
+        token = str(event.get("token", "")).lower()
+        if not token:
+            continue
+        row = by_token.setdefault(
+            token,
+            {
+                "last_trade_time_utc": "",
+                "first_buy_time_utc": "",
+                "token": event.get("token", ""),
+                "token_short": event.get("token_short") or short_addr(event.get("token", "")),
+                "symbol": event.get("symbol") or event.get("token_short") or short_addr(event.get("token", "")),
+                "buy_count": 0,
+                "sell_count": 0,
+                "buy_bnb": 0.0,
+                "sell_bnb": 0.0,
+                "realized_pnl_bnb": 0.0,
+                "realized_roi": 0.0,
+                "first_buy_fdv_usd": "",
+                "first_buy_bucket": "live_pending_fdv",
+                "open_position_flag": True,
+                "verification": "live_rpc_token_summary",
+            },
+        )
+        row["last_trade_time_utc"] = max(str(row.get("last_trade_time_utc", "")), str(event.get("time_utc", "")))
+        amount = to_float(event.get("bnb_amount"))
+        if event.get("event") == "buy":
+            row["buy_count"] += 1
+            row["buy_bnb"] += amount
+            if not row.get("first_buy_time_utc"):
+                row["first_buy_time_utc"] = event.get("time_utc", "")
+                row["first_buy_fdv_usd"] = event.get("fdv_usd", "")
+                row["first_buy_bucket"] = event.get("bucket") or "live_pending_fdv"
+        elif event.get("event") == "sell":
+            row["sell_count"] += 1
+            row["sell_bnb"] += amount
+    for row in by_token.values():
+        row["buy_bnb"] = round(row["buy_bnb"], 8)
+        row["sell_bnb"] = round(row["sell_bnb"], 8)
+        row["realized_pnl_bnb"] = round(row["sell_bnb"] - row["buy_bnb"], 8)
+        row["realized_roi"] = round(row["realized_pnl_bnb"] / row["buy_bnb"], 8) if row["buy_bnb"] else 0
+        row["open_position_flag"] = row["buy_count"] > row["sell_count"]
+    return sorted(by_token.values(), key=lambda row: row.get("last_trade_time_utc", ""), reverse=True)
+
+
+def merge_live_views(package: LivePackage, live_events: list[dict[str, Any]]) -> None:
+    live_buys = [live_event_to_buy(event) for event in live_events if event.get("event") == "buy"]
+    live_buy_hashes = {row.get("tx_hash") for row in live_buys if row.get("tx_hash")}
+    historical_buys = [row for row in package.recent_buys if row.get("tx_hash") not in live_buy_hashes]
+    package.recent_buys = sorted([*live_buys, *historical_buys], key=lambda row: row.get("time_utc", ""), reverse=True)[:80]
+
+    live_positions = summarize_token_live_events(live_events)
+    live_tokens = {str(row.get("token", "")).lower() for row in live_positions}
+    historical_positions = [
+        row for row in package.recent_positions
+        if str(row.get("token", "")).lower() not in live_tokens
+    ]
+    package.recent_positions = sorted(
+        [*live_positions, *historical_positions],
+        key=lambda row: row.get("last_trade_time_utc", ""),
+        reverse=True,
+    )[:100]
 
 
 def fetch_bscscan_txs(wallet: str, api_key: str, start_block: int = 0) -> list[dict[str, Any]]:
@@ -430,7 +520,8 @@ def build_offline_package() -> LivePackage:
         for row in daily[-60:]
     ]
 
-    live_events = load_existing_live_events()
+    live_event_payload = load_existing_live_event_payload()
+    live_events = live_event_payload.get("events", [])
     live_event_summary = summarize_live_events(live_events)
     summary = {
         "generated_at_utc": utc_now(),
@@ -454,9 +545,20 @@ def build_offline_package() -> LivePackage:
         ],
     }
     summary.update(live_event_summary)
+    if live_events:
+        summary["mode"] = "offline_csv_with_cached_rpc_events"
+        summary["sync_status"] = "cached_rpc_swap_logs_merged"
+        summary["cached_live_events_generated_at_utc"] = live_event_payload.get("generated_at_utc", "")
+        summary["latest_scanned_block"] = live_event_payload.get("latest_scanned_block", "")
+        summary["latest_scanned_time_utc"] = live_event_payload.get("latest_scanned_time_utc", "")
+        summary["latest_completed_block"] = live_event_payload.get("latest_completed_block", "")
+        summary["rpc_safe_tip_block"] = live_event_payload.get("latest_scanned_block", "")
+        summary["rpc_blocks_remaining"] = live_event_payload.get("rpc_blocks_remaining", "")
     if live_event_summary["latest_event_time_utc"]:
         summary["data_window"]["last_live_event_time_utc"] = live_event_summary["latest_event_time_utc"]
-    return LivePackage(summary, recent_buys_view, recent_positions_view, daily_view, live_events[:200])
+    package = LivePackage(summary, recent_buys_view, recent_positions_view, daily_view, live_events[:200])
+    merge_live_views(package, live_events)
+    return package
 
 
 def run_rpc_sync(env: dict[str, str], start_block_arg: int | None = None) -> LivePackage:
@@ -500,11 +602,15 @@ def run_rpc_sync(env: dict[str, str], start_block_arg: int | None = None) -> Liv
             "generated_at_utc": utc_now(),
             "tracked_wallet": wallet,
             "latest_scanned_block": safe_end,
+            "latest_scanned_time_utc": scanned_time,
+            "latest_completed_block": scan_end,
+            "rpc_blocks_remaining": max(0, safe_end - scan_end),
             "events": live_events,
         },
     )
     event_summary = summarize_live_events(live_events)
     package.live_events = live_events[:200]
+    merge_live_views(package, live_events)
     package.summary.update(event_summary)
     package.summary.update(
         {

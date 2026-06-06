@@ -110,6 +110,15 @@
       font-size: 13px;
     }
     .status-pill strong { color: var(--ink); margin-left: 4px; }
+    .time-cell {
+      display: grid;
+      gap: 2px;
+      min-width: 150px;
+    }
+    .time-cell small {
+      color: var(--muted);
+      font-size: 12px;
+    }
     a.button, button {
       display: inline-flex;
       align-items: center;
@@ -200,12 +209,18 @@
       <div class="live-status" id="liveStatus">
         <span class="status-pill">同步状态 <strong>加载中</strong></span>
       </div>
+      <div class="live-status" id="refreshStatus">
+        <span class="status-pill">自动刷新 <strong>每 5 分钟</strong></span>
+        <span class="status-pill">下次刷新 <strong id="refreshCountdown">--:--</strong></span>
+        <span class="status-pill">页面状态 <strong id="refreshState">等待数据</strong></span>
+      </div>
       <div class="actions">
         <a class="button primary" href="downloads/bsc_blogger_trade_analysis.xlsx">下载完整 Excel</a>
         <a class="button" href="data/buy_detail_with_fdv.csv">下载买入明细 CSV</a>
         <a class="button" href="data/token_trade_summary.csv">下载 token 汇总 CSV</a>
         <a class="button primary" href="data/live_trades.json">下载实时数据包 JSON</a>
         <a class="button" href="data/live_events.csv">下载最新链上事件 CSV</a>
+        <button type="button" id="manualRefreshBtn">立即刷新数据</button>
       </div>
     </div>
   </header>
@@ -247,7 +262,7 @@
       <h2>最新链上买卖事实（RPC 自动同步）</h2>
       <div class="table-scroll">
         <table id="liveEventTable">
-          <thead><tr><th>时间 UTC</th><th>动作</th><th>token</th><th>BNB</th><th>token 数量</th><th>交易哈希</th><th>事实等级</th></tr></thead>
+          <thead><tr><th>时间（北京 / UTC）</th><th>动作</th><th>token</th><th>BNB</th><th>token 数量</th><th>交易哈希</th><th>事实等级</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -265,7 +280,7 @@
           <h2>最近提醒</h2>
           <div class="table-scroll">
             <table id="listenerAlertTable">
-              <thead><tr><th>发现时间 UTC</th><th>交易时间 UTC</th><th>动作</th><th>token</th><th>BNB</th><th>决策</th><th>原因</th></tr></thead>
+              <thead><tr><th>发现时间（北京 / UTC）</th><th>交易时间（北京 / UTC）</th><th>动作</th><th>token</th><th>BNB</th><th>决策</th><th>原因</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -274,7 +289,7 @@
           <h2>Paper 跟单队列</h2>
           <div class="table-scroll">
             <table id="paperOrderTable">
-              <thead><tr><th>生成时间 UTC</th><th>动作</th><th>token</th><th>信号 BNB</th><th>paper BNB</th><th>决策</th><th>原因</th></tr></thead>
+              <thead><tr><th>生成时间（北京 / UTC）</th><th>动作</th><th>token</th><th>信号 BNB</th><th>paper BNB</th><th>决策</th><th>原因</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -288,7 +303,7 @@
         <h2>最近买入事实</h2>
         <div class="table-scroll">
           <table id="liveBuyTable">
-            <thead><tr><th>时间 UTC</th><th>token</th><th>买入 BNB</th><th>FDV</th><th>桶</th><th>事实等级</th></tr></thead>
+            <thead><tr><th>时间（北京 / UTC）</th><th>token</th><th>买入 BNB</th><th>FDV</th><th>桶</th><th>事实等级</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
@@ -345,7 +360,7 @@
         <table id="detailTable">
           <thead>
             <tr>
-              <th>买入时间 UTC</th>
+              <th>买入时间（北京 / UTC）</th>
               <th>token</th>
               <th>买入 BNB</th>
               <th>买入 USD</th>
@@ -358,7 +373,7 @@
           <tbody></tbody>
         </table>
       </div>
-      <p class="muted">页面为轻量展示，只渲染前 300 条匹配记录；完整数据请下载 CSV 或 Excel。</p>
+      <p class="muted" id="detailSummary">页面为轻量展示，只渲染前 300 条匹配记录；完整数据请下载 CSV 或 Excel。</p>
     </section>
 
     <section class="grid-2">
@@ -390,9 +405,14 @@
   </main>
 
   <script>
+    const AUTO_REFRESH_MS = 5 * 60 * 1000;
     const nf = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
     const pf = new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 1 });
     const bnb = new Intl.NumberFormat("en-US", { maximumFractionDigits: 4 });
+    let detailRows = [];
+    let refreshInFlight = false;
+    let nextRefreshAt = Date.now() + AUTO_REFRESH_MS;
+    let countdownTimer = null;
 
     function parseCsv(text) {
       const rows = [];
@@ -434,6 +454,7 @@
     }
 
     function money(value) {
+      if (value === "" || value === null || value === undefined) return "";
       const n = Number(value);
       return Number.isFinite(n) ? "$" + nf.format(n) : "";
     }
@@ -448,11 +469,20 @@
       return value.length > 16 ? value.slice(0, 8) + "..." + value.slice(-6) : value;
     }
 
-    function utcToBeijing(value) {
+    function parseUtcDate(value) {
       if (!value) return "";
-      const normalized = String(value).includes("T") ? String(value) : String(value).replace(" ", "T") + "Z";
+      let normalized = String(value).trim();
+      normalized = normalized.includes("T") ? normalized : normalized.replace(" ", "T");
+      if (!/(Z|[+-]\d{2}:?\d{2})$/i.test(normalized)) {
+        normalized += "Z";
+      }
       const date = new Date(normalized);
-      if (Number.isNaN(date.getTime())) return value;
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function utcToBeijing(value) {
+      const date = parseUtcDate(value);
+      if (!date) return value || "";
       return date.toLocaleString("zh-CN", {
         timeZone: "Asia/Shanghai",
         year: "numeric",
@@ -463,6 +493,93 @@
         second: "2-digit",
         hour12: false
       });
+    }
+
+    function utcLabel(value) {
+      const date = parseUtcDate(value);
+      if (!date) return value || "";
+      return date.toISOString().replace("T", " ").replace(".000Z", " UTC");
+    }
+
+    function beijingNow() {
+      return new Date().toLocaleString("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      });
+    }
+
+    function relativeAge(value) {
+      const date = parseUtcDate(value);
+      if (!date) return "";
+      const seconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+      if (seconds < 60) return seconds + " 秒前";
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return minutes + " 分钟前";
+      const hours = Math.floor(minutes / 60);
+      if (hours < 48) return hours + " 小时前";
+      return Math.floor(hours / 24) + " 天前";
+    }
+
+    function timeCell(value) {
+      if (!value) return "";
+      return "<span class=\"time-cell\"><span>" + utcToBeijing(value) + "</span><small>" + utcLabel(value) + "</small></span>";
+    }
+
+    function statusTime(value) {
+      if (!value) return "";
+      return utcToBeijing(value) + " / " + utcLabel(value);
+    }
+
+    function formatCountdown(ms) {
+      const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+    }
+
+    function setRefreshState(text, isError = false) {
+      const node = document.querySelector("#refreshState");
+      if (!node) return;
+      node.textContent = text;
+      node.className = isError ? "loss" : "";
+    }
+
+    function updateRefreshCountdown() {
+      const node = document.querySelector("#refreshCountdown");
+      if (!node) return;
+      node.textContent = formatCountdown(nextRefreshAt - Date.now());
+      if (Date.now() >= nextRefreshAt && !refreshInFlight) {
+        refreshDashboard();
+      }
+    }
+
+    function scheduleNextRefresh() {
+      nextRefreshAt = Date.now() + AUTO_REFRESH_MS;
+      if (!countdownTimer) {
+        countdownTimer = setInterval(updateRefreshCountdown, 1000);
+      }
+      updateRefreshCountdown();
+    }
+
+    function showLoadError(message) {
+      let node = document.querySelector("#loadError");
+      if (!node) {
+        document.body.insertAdjacentHTML("afterbegin", "<p id=\"loadError\" style=\"padding:12px;color:#b42318\">数据加载失败：" + message + "</p>");
+        return;
+      }
+      node.textContent = "数据加载失败：" + message;
+    }
+
+    function clearLoadError() {
+      const node = document.querySelector("#loadError");
+      if (node) node.remove();
+    }
+
+    function withCacheBust(path) {
+      return path + (path.includes("?") ? "&" : "?") + "v=" + Date.now();
     }
 
     function estimateScannedTime(summary) {
@@ -482,12 +599,12 @@
     }
 
     async function loadCsv(path) {
-      const res = await fetch(path);
+      const res = await fetch(withCacheBust(path), { cache: "no-store" });
       return parseCsv(await res.text());
     }
 
     async function loadJson(path) {
-      const res = await fetch(path);
+      const res = await fetch(withCacheBust(path), { cache: "no-store" });
       if (!res.ok) throw new Error(path + " not found");
       return res.json();
     }
@@ -496,10 +613,12 @@
       const status = document.querySelector("#liveStatus");
       const scannedTime = summary.latest_scanned_time_utc ? utcToBeijing(summary.latest_scanned_time_utc) : estimateScannedTime(summary);
       status.innerHTML = [
-        ["生成时间", utcToBeijing(summary.generated_at_utc || "")],
+        ["数据生成", statusTime(summary.generated_at_utc || "")],
+        ["数据年龄", relativeAge(summary.generated_at_utc || "")],
         ["模式", summary.mode || ""],
         ["状态", summary.sync_status || ""],
-        ["最后交易 北京", utcToBeijing(summary.latest_event_time_utc || "")],
+        ["最后交易", statusTime(summary.latest_event_time_utc || "")],
+        ["交易距今", relativeAge(summary.latest_event_time_utc || "")],
         ["已扫描到 北京", scannedTime || "等待下一次同步"],
         ["已扫最新block", summary.latest_scanned_block || summary.rpc_safe_tip_block || ""],
         ["历史补扫block", summary.latest_completed_block || ""],
@@ -530,7 +649,7 @@
         const event = r.event === "buy" ? "买入" : "卖出";
         const clsName = r.event === "buy" ? "win" : "loss";
         return rowHtml([
-          r.time_utc,
+          timeCell(r.time_utc),
           "<strong class=\"" + clsName + "\">" + event + "</strong>",
           "<code>" + (r.symbol || r.token_short || shortHash(r.token)) + "</code>",
           bnb.format(Number(r.bnb_amount || 0)),
@@ -543,7 +662,7 @@
 
     function renderLiveBuys(rows) {
       document.querySelector("#liveBuyTable tbody").innerHTML = rows.slice(0, 40).map((r) => rowHtml([
-        r.time_utc,
+        timeCell(r.time_utc),
         "<code>" + (r.symbol || r.token_short) + "</code>",
         bnb.format(Number(r.bnb_amount || 0)),
         money(r.fdv_usd),
@@ -557,7 +676,7 @@
         const pnl = Number(r.realized_pnl_bnb || 0);
         const status = r.open_position_flag ? "open" : "closed";
         return rowHtml([
-          r.last_trade_time_utc,
+          timeCell(r.last_trade_time_utc),
           "<code>" + (r.symbol || r.token_short) + "</code>",
           r.buy_count + "/" + r.sell_count,
           "<strong class=\"" + (pnl >= 0 ? "win" : "loss") + "\">" + bnb.format(pnl) + "</strong>",
@@ -609,8 +728,8 @@
 
       const alertBody = document.querySelector("#listenerAlertTable tbody");
       alertBody.innerHTML = alerts.length ? alerts.slice(0, 80).map((r) => rowHtml([
-        r.created_at_utc || "",
-        r.event_time_utc || "",
+        timeCell(r.created_at_utc),
+        timeCell(r.event_time_utc),
         "<strong class=\"" + (r.event === "buy" ? "win" : "loss") + "\">" + (r.event === "buy" ? "买入" : "卖出") + "</strong>",
         "<code>" + (r.token_short || shortHash(r.token || "")) + "</code>",
         bnb.format(Number(r.bnb_amount || 0)),
@@ -620,7 +739,7 @@
 
       const paperBody = document.querySelector("#paperOrderTable tbody");
       paperBody.innerHTML = paperOrders.length ? paperOrders.slice(0, 80).map((r) => rowHtml([
-        r.created_at_utc || "",
+        timeCell(r.created_at_utc),
         "<strong class=\"" + (r.event === "buy" ? "win" : "loss") + "\">" + (r.event === "buy" ? "买入" : "卖出") + "</strong>",
         "<code>" + shortHash(r.token || "") + "</code>",
         bnb.format(Number(r.signal_bnb || 0)),
@@ -637,9 +756,13 @@
         if (bucket && r.trade_fdv_bucket !== bucket) return false;
         if (!query) return true;
         return [r.token, r.symbol, r.name, r.tx_hash].join(" ").toLowerCase().includes(query);
-      }).slice(0, 300);
+      }).sort((a, b) => String(b.time_utc || "").localeCompare(String(a.time_utc || ""))).slice(0, 300);
+      const latestDetailTime = rows.reduce((latest, row) => {
+        const value = String(row.time_utc || "");
+        return value > latest ? value : latest;
+      }, "");
       document.querySelector("#detailTable tbody").innerHTML = filtered.map((r) => rowHtml([
-        r.time_utc,
+        timeCell(r.time_utc),
         "<code>" + shortHash(r.token) + "</code>",
         bnb.format(Number(r.bnb_amount)),
         money(r.usd_amount),
@@ -648,6 +771,9 @@
         "<span class=\"pill\">" + r.trade_fdv_bucket + "</span>",
         "<code>" + shortHash(r.tx_hash) + "</code>"
       ])).join("");
+      document.querySelector("#detailSummary").textContent = "页面为轻量展示，按交易时间倒排渲染前 300 条匹配记录；这份历史明细最新交易为 "
+        + (latestDetailTime ? statusTime(latestDetailTime) : "暂无")
+        + "。完整数据请下载 CSV 或 Excel。";
     }
 
     function renderRank(tableId, rows) {
@@ -662,7 +788,7 @@
       }).join("");
     }
 
-    async function main() {
+    async function loadDashboardData() {
       const [buckets, details, winners, losers] = await Promise.all([
         loadCsv("data/fdv_bucket_summary.csv"),
         loadCsv("data/buy_detail_with_fdv.csv"),
@@ -687,21 +813,46 @@
       }
       renderListener(listenerStatus, listenerAlerts, paperOrders);
       renderBuckets(buckets);
-      renderDetail(details);
+      detailRows = details.sort((a, b) => String(b.time_utc || "").localeCompare(String(a.time_utc || "")));
+      renderDetail(detailRows);
       renderRank("winnerTable", winners);
       renderRank("loserTable", losers);
-      document.querySelector("#bucketFilter").addEventListener("change", () => renderDetail(details));
-      document.querySelector("#searchInput").addEventListener("input", () => renderDetail(details));
+    }
+
+    async function refreshDashboard() {
+      if (refreshInFlight) return;
+      refreshInFlight = true;
+      setRefreshState("刷新中");
+      try {
+        await loadDashboardData();
+        clearLoadError();
+        setRefreshState("已刷新 " + beijingNow());
+      } catch (err) {
+        showLoadError(err.message);
+        setRefreshState("刷新失败", true);
+      } finally {
+        refreshInFlight = false;
+        scheduleNextRefresh();
+      }
+    }
+
+    function bindControls() {
+      document.querySelector("#bucketFilter").addEventListener("change", () => renderDetail(detailRows));
+      document.querySelector("#searchInput").addEventListener("input", () => renderDetail(detailRows));
       document.querySelector("#resetBtn").addEventListener("click", () => {
         document.querySelector("#bucketFilter").value = "";
         document.querySelector("#searchInput").value = "";
-        renderDetail(details);
+        renderDetail(detailRows);
       });
+      document.querySelector("#manualRefreshBtn").addEventListener("click", refreshDashboard);
     }
 
-    main().catch((err) => {
-      document.body.insertAdjacentHTML("afterbegin", "<p style=\"padding:12px;color:#b42318\">数据加载失败：" + err.message + "</p>");
-    });
+    function initDashboard() {
+      bindControls();
+      refreshDashboard();
+    }
+
+    initDashboard();
   </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 {
   "created_at_utc": "2026-06-06T12:59:23Z",
-  "last_scanned_block": 102652069,
+  "last_scanned_block": 102653808,
   "seen_event_keys": [
     "0x00fb5352c6b2d490b30af70ad8f4cf9671ec0ac6e804ab32d35b3d6916d208ef:93",
     "0x0184dda85358d048db3ab49fc15892b295832d675f058eed3ddc20604ec95e66:166",
@@ -332,5 +332,5 @@
     "0xfb4e23d6e889b5e21f8c2a3ed9d135930e814444"
   ],
   "bootstrap_completed": true,
-  "updated_at_utc": "2026-06-06T12:59:23Z"
+  "updated_at_utc": "2026-06-06T13:12:28Z"
 }
