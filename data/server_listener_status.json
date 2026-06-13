@@ -1,0 +1,35 @@
+{
+  "generated_at_utc": "2026-06-06T13:12:28Z",
+  "mode": "server_listener",
+  "wallet": "0x55976c6818e4794f3e2e7179eea2cc2202811e11",
+  "rpc_url": "https://bsc.rpc.blxrbdn.com",
+  "poll_seconds": 10,
+  "confirmations": 2,
+  "start_block": 102653121,
+  "end_block": 102653808,
+  "safe_tip_block": 102653808,
+  "blocks_behind": 0,
+  "logs_seen": 0,
+  "events_decoded": 0,
+  "new_alerts": 0,
+  "total_alerts": 0,
+  "dry_run": true,
+  "copytrade_status": "paper_only_real_trading_disabled",
+  "rule_summary": {
+    "first_buy_only": true,
+    "min_signal_bnb": 0.05,
+    "max_signal_bnb": 2.0,
+    "paper_bnb": 0.02,
+    "max_signal_age_seconds": 45,
+    "min_fdv_usd": 0.0,
+    "max_fdv_usd": 50000.0,
+    "require_market_data": false,
+    "require_sell_simulation": true
+  },
+  "notify_channels": [
+    "console",
+    "json",
+    "web"
+  ],
+  "notify_errors": []
+}
