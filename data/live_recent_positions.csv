@@ -1,4 +1,8 @@
 last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb,sell_bnb,realized_pnl_bnb,realized_roi,first_buy_fdv_usd,first_buy_bucket,open_position_flag,verification
+2026-06-15 12:21:48,2026-06-13 16:18:28,0x5b476d3cb81154e58fa2fa034a029197e5294444,0x5b476d...294444,2,1,1.2,0.58096903,-0.61903097,-0.51585914,,live_pending_fdv,True,live_rpc_token_summary
+2026-06-15 11:53:05,2026-06-15 11:52:44,0x9847adbbfc2aae140cc9843819ecd20ee7674444,0x9847ad...674444,1,1,0.6,0.6594048,0.0594048,0.099008,,live_pending_fdv,False,live_rpc_token_summary
+2026-06-15 11:52:49,2026-06-15 11:52:29,0x4b0b486631b9f7b0fd1ba8af1abdc123da9e4444,0x4b0b48...9e4444,1,1,0.4,0.45204975,0.05204975,0.13012437,,live_pending_fdv,False,live_rpc_token_summary
+2026-06-15 11:00:00,2026-06-15 11:00:00,0x40a8070d626f72669c664d95b8ab302f1d8b4444,0x40a807...8b4444,1,0,0.6,0.0,-0.6,-1.0,,live_pending_fdv,True,live_rpc_token_summary
 2026-06-15 06:04:53,2026-06-15 05:58:58,0x2c34924bed7c015b6df54c5da8bd3aac275cb780,0x2c3492...5cb780,2,1,0.6,0.11821082,-0.48178918,-0.80298197,,live_pending_fdv,True,live_rpc_token_summary
 2026-06-15 06:04:52,2026-06-15 05:59:19,0xa84ff80e621fb0a2b1687c8b169da19f057f5a98,0xa84ff8...7f5a98,1,1,0.4,0.15649127,-0.24350873,-0.60877182,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-15 04:25:55,2026-06-15 04:25:55,0x64057c42f41b06cdb51f18ce214cdaac00304444,0x64057c...304444,1,0,0.4,0.0,-0.4,-1.0,,live_pending_fdv,True,live_rpc_token_summary
@@ -10,7 +14,6 @@ last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb
 2026-06-14 06:38:39,2026-06-14 06:37:56,0x06ee79db3fd52b3d82daeab1983f55eee6a54444,0x06ee79...a54444,1,1,0.99,0.51799071,-0.47200929,-0.47677706,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-14 06:11:16,2026-06-13 10:40:55,0x8b2863af3b292ca217e8834ca0e010826f8a4444,0x8b2863...8a4444,1,4,0.6,0.88890605,0.28890605,0.48151008,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-14 06:09:45,2026-06-14 06:09:38,0x48a2e04f602abf093f0431c0b6e239f7f38a4444,0x48a2e0...8a4444,1,1,0.6,0.71530142,0.11530142,0.19216903,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-14 04:02:02,2026-06-13 16:18:28,0x5b476d3cb81154e58fa2fa034a029197e5294444,0x5b476d...294444,1,1,0.6,0.58096903,-0.01903097,-0.03171828,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-13 16:13:47,2026-06-13 16:13:47,0xe9ae476fb895c08ccc592ca8566c99d4894e4444,0xe9ae47...4e4444,1,0,0.6,0.0,-0.6,-1.0,,live_pending_fdv,True,live_rpc_token_summary
 2026-06-13 16:13:29,2026-06-13 16:13:29,0xfd0d94ba57053990ee1c9c14371099f6e5d64444,0xfd0d94...d64444,1,0,0.6,0.0,-0.6,-1.0,,live_pending_fdv,True,live_rpc_token_summary
 2026-06-13 16:11:50,,0xa7be2d75787f15444bc32ea97b5ef36386aa4444,0xa7be2d...aa4444,0,1,0.0,0.20394727,0.20394727,0,,live_pending_fdv,False,live_rpc_token_summary
@@ -96,6 +99,3 @@ last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb
 2026-06-05 13:43:43,2026-06-05 13:14:03,0x7eb5b11621257917a80665ece62c9ad7e0b14444,0x7eb5b1...b14444,2,5,0.9,1.13947812,0.23947812,0.2660868,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-05 13:31:32,2026-06-05 11:58:15,0x1218147da617f2605f25a7a2f82ccbb7f1574444,0x121814...574444,1,7,0.6,1.59608967,0.99608967,1.66014945,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-05 13:01:05,2026-06-05 12:57:21,0x03cd412cda8b6b45b1819ac03737855cb53b4444,0x03cd41...3b4444,1,1,0.6,0.59151292,-0.00848708,-0.01414513,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-05 12:47:57,2026-06-05 12:31:02,0x68585448d517f4735f95d7826377f044d33dffff,0x685854...3dffff,1,2,0.6,0.43226389,-0.16773611,-0.27956018,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-05 11:39:45,2026-06-05 03:43:12,0xb8cc4a6691c2e04edd8481bfff0f3e3df04d4444,0xb8cc4a...4d4444,1,1,0.4,0.10812957,-0.29187043,-0.72967607,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-05 11:39:06,2026-06-05 11:38:06,0xb9bfd2aaf38f68b68e199f98ef0d390903714444,0xb9bfd2...714444,1,3,0.77,1.22178051,0.45178051,0.58672794,,live_pending_fdv,False,live_rpc_token_summary
