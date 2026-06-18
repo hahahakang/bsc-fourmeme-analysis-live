@@ -1,4 +1,5 @@
 time_utc,event,token,symbol,bnb_amount,usd_amount,fdv_usd,bucket,tx_hash,verification
+2026-06-18 11:01:43,buy,0x4444b0a5f539b3b7e19b7091dfa0f48bed296c4c,0x4444b0...296c4c,0.6,,,live_pending_fdv,0xd64cdff05c65a0e42488da15b671441c6fd9d837608248b130f924daa504694f,verified_from_rpc_swap_log
 2026-06-18 06:28:23,buy,0x5d4bff6198b1c8d91f3f9e3f376dd18af9cb7777,0x5d4bff...cb7777,0.6,,,live_pending_fdv,0x1a1fe7f746262866c285d9bc85d1ede5b74a27cb9207e979a7019da0b0a5e25a,verified_from_rpc_swap_log
 2026-06-17 15:06:09,buy,0x59ce343076a5098724de8a3e9f37421ef0787777,0x59ce34...787777,0.4,,,live_pending_fdv,0xedb2bba5afdc465b1504bed5b2fabb83626c15e133d8d390b8615817e1f5495b,verified_from_rpc_swap_log
 2026-06-17 10:28:49,buy,0x0aa6dff980f1d9d74d61819ea4ad71d8fa33d153,0x0aa6df...33d153,0.6,,,live_pending_fdv,0xff087f13d45969530eab1bef031493fc4313f7646c7681c839e5f7c51ca8b76f,verified_from_rpc_swap_log
@@ -78,4 +79,3 @@ time_utc,event,token,symbol,bnb_amount,usd_amount,fdv_usd,bucket,tx_hash,verific
 2026-06-06 14:03:13,buy,0x5999695624852ad1a7657eb63c806b48aaf14444,0x599969...f14444,0.6,,,live_pending_fdv,0x3f7a466b262d2ae7b6f6b14f68e788f578d17e0bdc863e307aef905b992da4d4,verified_from_rpc_swap_log
 2026-06-06 12:46:31,buy,0x304087973e773490a086fb49d98ba109d7017777,0x304087...017777,0.6,,,live_pending_fdv,0x9ef34cfef44513f13788b8c8596cc0d3992b4e92978b2ba5d625f7f051591930,verified_from_rpc_swap_log
 2026-06-06 11:00:16,buy,0x9f1a43f0c6c4c6f8aced9f829ac50cc0358a4444,0x9f1a43...8a4444,0.77,,,live_pending_fdv,0xafe82a1a2d8d5bde67f336997b0db3b0041533c6f99f70338147a27e72bf2997,verified_from_rpc_swap_log
-2026-06-06 10:57:07,buy,0xba50b40f99d64c3c2a07a5112a58c7ebc4c2ffff,0xba50b4...c2ffff,0.02,,,live_pending_fdv,0x3c2a8c04d7cd01b5c6393688507cfc18da73f7897978900f0811bebd5a1b2552,verified_from_rpc_swap_log
