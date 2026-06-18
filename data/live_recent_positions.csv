@@ -1,4 +1,8 @@
 last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb,sell_bnb,realized_pnl_bnb,realized_roi,first_buy_fdv_usd,first_buy_bucket,open_position_flag,verification
+2026-06-18 07:00:19,2026-06-16 05:12:49,0x8ed74aa4eecd4bf81fa597464a0f5b3f43374444,0x8ed74a...374444,1,1,0.3,0.31654022,0.01654022,0.05513407,,live_pending_fdv,False,live_rpc_token_summary
+2026-06-18 06:59:57,2026-06-18 06:28:23,0x5d4bff6198b1c8d91f3f9e3f376dd18af9cb7777,0x5d4bff...cb7777,1,2,0.6,0.65643399,0.05643399,0.09405665,,live_pending_fdv,False,live_rpc_token_summary
+2026-06-18 06:49:59,,0x000ae314e2a2172a039b26378814c252734f556a,0x000ae3...4f556a,0,1,0.0,0.01743134,0.01743134,0,,live_pending_fdv,False,live_rpc_token_summary
+2026-06-18 06:49:50,,0x924fa68a0fc644485b8df8abfa0a41c2e7744444,0x924fa6...744444,0,1,0.0,0.00865073,0.00865073,0,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-17 15:06:09,2026-06-17 15:06:09,0x59ce343076a5098724de8a3e9f37421ef0787777,0x59ce34...787777,1,0,0.4,0.0,-0.4,-1.0,,live_pending_fdv,True,live_rpc_token_summary
 2026-06-17 10:33:45,2026-06-17 10:24:44,0x0aa6dff980f1d9d74d61819ea4ad71d8fa33d153,0x0aa6df...33d153,2,2,1.2,1.16712306,-0.03287694,-0.02739745,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-17 08:34:43,2026-06-17 08:33:20,0x7488389754f8e49e95bc2599b830993540754444,0x748838...754444,1,1,0.6,0.55946694,-0.04053306,-0.0675551,,live_pending_fdv,False,live_rpc_token_summary
@@ -16,7 +20,6 @@ last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb
 2026-06-16 10:39:11,2026-06-16 09:11:20,0x4ae66ca2e6446538cd1bb570a0a40221dee84444,0x4ae66c...e84444,1,1,0.99,0.95154495,-0.03845505,-0.03884348,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-16 05:19:44,2026-06-16 05:19:18,0xc9c7181dca3d52fc7d240d5fe49054e6545d4444,0xc9c718...5d4444,1,1,0.6,0.59429929,-0.00570071,-0.00950118,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-16 05:18:49,2026-06-16 05:18:35,0x62cfb88e6d6cd4eca4bd2df638cfefd115944444,0x62cfb8...944444,1,1,0.99,0.74969423,-0.24030577,-0.2427331,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-16 05:12:49,2026-06-16 05:12:49,0x8ed74aa4eecd4bf81fa597464a0f5b3f43374444,0x8ed74a...374444,1,0,0.3,0.0,-0.3,-1.0,,live_pending_fdv,True,live_rpc_token_summary
 2026-06-15 13:39:50,2026-06-15 13:39:50,0x7400bf6c09728d066e02749379bef1cb46d94444,0x7400bf...d94444,1,0,1.2,0.0,-1.2,-1.0,,live_pending_fdv,True,live_rpc_token_summary
 2026-06-15 12:21:48,2026-06-13 16:18:28,0x5b476d3cb81154e58fa2fa034a029197e5294444,0x5b476d...294444,2,1,1.2,0.58096903,-0.61903097,-0.51585914,,live_pending_fdv,True,live_rpc_token_summary
 2026-06-15 11:53:05,2026-06-15 11:52:44,0x9847adbbfc2aae140cc9843819ecd20ee7674444,0x9847ad...674444,1,1,0.6,0.6594048,0.0594048,0.099008,,live_pending_fdv,False,live_rpc_token_summary
@@ -96,6 +99,3 @@ last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb
 2026-06-06 12:49:05,2026-06-06 12:46:31,0x304087973e773490a086fb49d98ba109d7017777,0x304087...017777,1,1,0.6,0.48895553,-0.11104447,-0.18507412,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-06 11:00:35,2026-06-06 11:00:16,0x9f1a43f0c6c4c6f8aced9f829ac50cc0358a4444,0x9f1a43...8a4444,1,1,0.77,0.74459922,-0.02540078,-0.03298803,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-06 10:49:16,2026-06-06 10:47:38,0x9a9b4bdf5b32856a4e614b0ff6835b1ddc8c4444,0x9a9b4b...8c4444,1,1,0.6,0.48990072,-0.11009928,-0.1834988,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-06 10:48:09,2026-06-06 10:48:03,0xe226f4573eaeff78d5333d9938cab3d829f44444,0xe226f4...f44444,1,1,0.77,0.6284804,-0.1415196,-0.18379169,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-06 10:47:29,2026-06-06 10:47:13,0xfb4d42ecdf96d183838639a762304773d5e34444,0xfb4d42...e34444,1,1,0.6,0.29826786,-0.30173214,-0.5028869,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-06 10:01:58,2026-06-06 10:00:28,0x9c379e6f819c99e43804114f75cf0ad8ef844444,0x9c379e...844444,1,1,0.6,0.39216663,-0.20783337,-0.34638895,,live_pending_fdv,False,live_rpc_token_summary
