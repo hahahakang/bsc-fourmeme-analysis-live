@@ -1,4 +1,8 @@
 last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb,sell_bnb,realized_pnl_bnb,realized_roi,first_buy_fdv_usd,first_buy_bucket,open_position_flag,verification
+2026-06-29 10:19:02,2026-06-29 10:06:26,0x0aa4463cb42a4f1fc449dfbfb69b37506bd14444,0x0aa446...d14444,1,3,0.4,0.41144938,0.01144938,0.02862345,,live_pending_fdv,False,live_rpc_token_summary
+2026-06-29 08:38:10,2026-06-08 16:06:34,0x904430a802e511111afbe59730dbcfdbf1784444,0x904430...784444,2,1,1.0,0.47792877,-0.52207123,-0.52207123,,live_pending_fdv,True,live_rpc_token_summary
+2026-06-29 08:31:57,2026-06-29 08:31:54,0xb2acf3ae051c7f0b0b8de90cbb4ed99312574444,0xb2acf3...574444,2,0,2.4,0.0,-2.4,-1.0,,live_pending_fdv,True,live_rpc_token_summary
+2026-06-29 08:06:24,2026-06-29 08:04:05,0xa755f4d4193ed810a6c674f45e8590a4ebb44444,0xa755f4...b44444,1,4,0.4,0.4377922,0.0377922,0.0944805,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-28 11:39:37,2026-06-28 11:37:28,0xeee5ffbd5b3e6e2cc7aaba44b834f45a97bdffff,0xeee5ff...bdffff,1,1,0.6,0.39245126,-0.20754874,-0.34591457,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-28 10:41:41,2026-06-28 06:29:32,0x5e95dbec7d7b3a09a84b0a5938a4c843fdc07777,0x5e95db...c07777,2,3,1.2,1.18068497,-0.01931503,-0.01609586,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-28 10:05:57,2026-06-04 08:22:36,0xa27bb31e19528714aab0d5ebc4f62e497edd4444,0xa27bb3...dd4444,1,9,0.6,1.31889395,0.71889395,1.19815658,,live_pending_fdv,False,live_rpc_token_summary
@@ -33,7 +37,6 @@ last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb
 2026-06-24 09:04:03,2026-06-24 09:03:44,0x4975681a0bdcaaf0d701b709d81baf729d5e4444,0x497568...5e4444,1,1,0.6,0.52932574,-0.07067426,-0.11779043,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-24 08:19:39,2026-06-24 08:19:12,0x529a7dcded0654a5afc0ce3d94ec52cc3cc94444,0x529a7d...c94444,1,1,0.4,0.33362342,-0.06637658,-0.16594145,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-24 07:45:11,2026-06-24 07:43:47,0x89f9a17aaa98f0be1bfefa8e6e7f9ad83e087777,0x89f9a1...087777,1,1,0.3,0.29281395,-0.00718605,-0.0239535,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-24 04:37:19,2026-06-08 16:06:34,0x904430a802e511111afbe59730dbcfdbf1784444,0x904430...784444,2,0,1.0,0.0,-1.0,-1.0,,live_pending_fdv,True,live_rpc_token_summary
 2026-06-24 04:36:05,2026-06-24 04:15:21,0xde7fededd4c4e78a664281290912fdee8e9e4444,0xde7fed...9e4444,1,3,0.6,0.76642573,0.16642573,0.27737622,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-24 04:34:28,2026-06-24 04:10:18,0x46fa7cd3467ca4349874e10dd7f0e885c1844444,0x46fa7c...844444,1,2,0.4,0.50957424,0.10957424,0.2739356,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-24 03:23:40,2026-06-11 02:06:42,0x44449ba264dffdcf903128c6800d9e4d3998adaf,0x44449b...98adaf,2,3,6.2,10.4262442,4.2262442,0.68165229,,live_pending_fdv,False,live_rpc_token_summary
@@ -96,6 +99,3 @@ last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb
 2026-06-14 10:16:31,2026-06-14 10:13:31,0x2ab18ef724790161c273dd6ad4247cf70e554444,0x2ab18e...554444,1,1,0.4,0.40036263,0.00036263,0.00090657,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-14 10:12:56,2026-06-14 09:46:11,0x0c43e66781cd9ea287d3e0e3c9b6c0c065484444,0x0c43e6...484444,1,1,0.6,0.5492762,-0.0507238,-0.08453967,,live_pending_fdv,False,live_rpc_token_summary
 2026-06-14 06:38:39,2026-06-14 06:37:56,0x06ee79db3fd52b3d82daeab1983f55eee6a54444,0x06ee79...a54444,1,1,0.99,0.51799071,-0.47200929,-0.47677706,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-14 06:11:16,2026-06-13 10:40:55,0x8b2863af3b292ca217e8834ca0e010826f8a4444,0x8b2863...8a4444,1,4,0.6,0.88890605,0.28890605,0.48151008,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-14 06:09:45,2026-06-14 06:09:38,0x48a2e04f602abf093f0431c0b6e239f7f38a4444,0x48a2e0...8a4444,1,1,0.6,0.71530142,0.11530142,0.19216903,,live_pending_fdv,False,live_rpc_token_summary
-2026-06-13 16:13:29,2026-06-13 16:13:29,0xfd0d94ba57053990ee1c9c14371099f6e5d64444,0xfd0d94...d64444,1,0,0.6,0.0,-0.6,-1.0,,live_pending_fdv,True,live_rpc_token_summary
