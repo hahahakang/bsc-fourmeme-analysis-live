@@ -1,4 +1,17 @@
 time_utc,event,token,symbol,bnb_amount,usd_amount,fdv_usd,bucket,tx_hash,verification
+2026-07-09 08:22:24,buy,0xb3bd5d2d11578b1ce712ad6225163740c3664444,0xb3bd5d...664444,0.4,,,live_pending_fdv,0xe13cdfb10cf2470adf0c9279679e9c0831645e234b786c08da2826a999fc1577,verified_from_rpc_swap_log
+2026-07-09 07:38:27,buy,0x995a31f9225f91f385f13459a61eafd7e7cb4444,0x995a31...cb4444,0.4,,,live_pending_fdv,0x21fd2df3880ad934aded1f9b7f238f729ab1f332fc3ded6830165b5f661f3363,verified_from_rpc_swap_log
+2026-07-09 07:30:12,buy,0xe4c3d926e93b5d6553d138d8f876997c36d84444,0xe4c3d9...d84444,0.35,,,live_pending_fdv,0xb613b4d8284ff1e037cad06d39f5d8feecb63ef38b35b9f7eaec25f7bfc0b236,verified_from_rpc_swap_log
+2026-07-09 07:23:11,buy,0xc95954e12a811453de575fe70766ae22e1474444,0xc95954...474444,0.3,,,live_pending_fdv,0x32c9032b23955d29a1c9f9c24f9d83b324ad83ea2ea68eba8b6a59072a6077dd,verified_from_rpc_swap_log
+2026-07-09 07:20:07,buy,0x949e59951fb454cec6cbdaf7c6a68d1da6e64444,0x949e59...e64444,0.4,,,live_pending_fdv,0x002a1cf41cd1a3d2e53bdc21c4492a2c6f051040b888870503192729703bb5f6,verified_from_rpc_swap_log
+2026-07-09 07:20:02,buy,0xe639bcab672af06f213febf60c414659e2f14444,0xe639bc...f14444,0.4,,,live_pending_fdv,0xa681128fda1a6f2f761131ec6c1f45208e48cb90915ea034bbfbcdd9eb5fd729,verified_from_rpc_swap_log
+2026-07-09 07:06:30,buy,0xfebd1beb44dd2f73fa1ef448349847b078204444,0xfebd1b...204444,0.3,,,live_pending_fdv,0xeebf12f7a9794a4e900608600553f1d00b08336e7d860d99ba95ad8deadcf057,verified_from_rpc_swap_log
+2026-07-09 06:40:28,buy,0x9c920baf6bffcae77896a6aab49a4dec5a374444,0x9c920b...374444,0.89,,,live_pending_fdv,0xc205cd79bf345f6a2ba62bd9800484334107b67d32b972d49d1e9228402a4761,verified_from_rpc_swap_log
+2026-07-09 06:37:20,buy,0xea65dfbd98dc3751cb80e1782c3a144b4e964444,0xea65df...964444,0.3,,,live_pending_fdv,0xc59f400f2a28cd9c973a3d15ba28da9134c145a0bfda724de0cb5f5ac7f26fb0,verified_from_rpc_swap_log
+2026-07-09 06:35:17,buy,0x81b1b72f0bd5ca02bd8182226af570b7792e4444,0x81b1b7...2e4444,0.3,,,live_pending_fdv,0xad766da4b90c5dee860327224d18ddcfbab3ce4448e2693a0feb1f9d86183bd0,verified_from_rpc_swap_log
+2026-07-09 06:33:42,buy,0xe05659be573db69cf99d077074120e777e824444,0xe05659...824444,0.3,,,live_pending_fdv,0x3f006a352bb87ec3d24770e4b7833ed765afd9298b22970529855d6fccf14e7e,verified_from_rpc_swap_log
+2026-07-09 06:33:27,buy,0x5f6fd60ad6cd8751b4c521bc00fa02abfeca4444,0x5f6fd6...ca4444,0.89,,,live_pending_fdv,0x03c09a4bec071034f90042e6e6287999effeab8e84a9ac57c21d2f17245f8817,verified_from_rpc_swap_log
+2026-07-09 06:31:18,buy,0x640c04ca09c5c5140e62fef42c59e3afdbbd4444,0x640c04...bd4444,0.89,,,live_pending_fdv,0xdd45b12ccf9cf5343bd35190a8709199f0bf2f78ef86fa3dfdfdac3a1a05e820,verified_from_rpc_swap_log
 2026-07-09 04:59:31,buy,0x46ff086d71d74bf53b3b5397e41be73f66b24444,0x46ff08...b24444,0.4,,,live_pending_fdv,0xefab82f91bf8570fd0af11a58894b51e1fa0a28377313646bb126a935b9fbce4,verified_from_rpc_swap_log
 2026-07-09 04:56:37,buy,0x5253e161e2a0ef559380e9c02c7694a578c24444,0x5253e1...c24444,0.3,,,live_pending_fdv,0x7036a3a16cea21a7eb725527ea47acd29b5dc2a5a4e92ef3da7052719b9da76d,verified_from_rpc_swap_log
 2026-07-09 04:50:00,buy,0x771795c0eb8fd7ff4b05668867d45047d1644444,0x771795...644444,0.3,,,live_pending_fdv,0xadb4f5026cfe34a1769ce82f2b9eac7092a80c7ad2fc2c647d661aa60239f9a9,verified_from_rpc_swap_log
@@ -66,16 +79,3 @@ time_utc,event,token,symbol,bnb_amount,usd_amount,fdv_usd,bucket,tx_hash,verific
 2026-07-07 14:48:51,buy,0x83c90d1161d661040c35b807d55269bd09044444,0x83c90d...044444,0.445,,,live_pending_fdv,0x037d5e4dcf12a0f839f4f1a2c8cba3357151d026cefe005c6bcc637558e64dc2,verified_from_rpc_swap_log
 2026-07-07 14:46:44,buy,0x4a5111598967918c298686361376b54ef8e14444,0x4a5111...e14444,0.445,,,live_pending_fdv,0xc41e62be1709b561fdf9fde81c9f95d35a60e202f5597fea1c3353c227d0976c,verified_from_rpc_swap_log
 2026-07-07 14:43:53,buy,0xd4b1d669b513b19a2db90fce6b60741426954444,0xd4b1d6...954444,0.445,,,live_pending_fdv,0x06dd8224876a90c76e50da958b83fa402113e6ded98edc45d599fc88574d1784,verified_from_rpc_swap_log
-2026-07-07 14:34:03,buy,0x3dbbeb4ec1d35352867569afea0df40e3e5affff,0x3dbbeb...5affff,0.445,,,live_pending_fdv,0xfd36371344aefcb95e7723ee4a774f078665e3ad705ec7a3f02e944bdccb14fd,verified_from_rpc_swap_log
-2026-07-07 14:12:50,buy,0x96e7ddd5ed4f0122bad62f75541fad1b61f2ffff,0x96e7dd...f2ffff,0.445,,,live_pending_fdv,0xaec0b0ab3f20b7111c1c131d4f278a3ab23072e93de4d238f7942728767666ce,verified_from_rpc_swap_log
-2026-07-07 14:03:11,buy,0xd4b1d669b513b19a2db90fce6b60741426954444,0xd4b1d6...954444,0.445,,,live_pending_fdv,0xf24ac49e4762fe81a936a795d470f11530f959fb7ccc1347843a8c6e3a71e4c4,verified_from_rpc_swap_log
-2026-07-07 13:54:50,buy,0x6850c540682b661dfa68ab03c0f7e46125f84444,0x6850c5...f84444,0.3,,,live_pending_fdv,0xa047a098dffdc8c52bd9bad0901e0bd7fd9d8ca36fed33c9fe00816d5b3dde8e,verified_from_rpc_swap_log
-2026-07-07 13:49:24,buy,0x22322f189c16737b3b06c90d6e7d1c36b1304444,0x22322f...304444,0.15,,,live_pending_fdv,0x6230aaca5a77b3133dcaea5083a6db3fce1ec7fb31ff1d211bca71381b3ca608,verified_from_rpc_swap_log
-2026-07-07 13:39:43,buy,0x7fc72ae87e0863c2d52eee5ec00ec4206ca24444,0x7fc72a...a24444,0.445,,,live_pending_fdv,0xd4b6b2780cbf9fe90050b2d3e4f040e4a726c00f3478cc1012bb6a9c0a847775,verified_from_rpc_swap_log
-2026-07-07 13:18:17,buy,0xc451eb7baef8cdc88eb60b50c5e33c76024b4444,0xc451eb...4b4444,0.3,,,live_pending_fdv,0x1bda0b59ae7a16bda933f016595001b70a203ace6cf70beae20e73619c3b5c38,verified_from_rpc_swap_log
-2026-07-07 13:10:41,buy,0x72d58d39c755f711a954117fe9bf790e56df4444,0x72d58d...df4444,0.445,,,live_pending_fdv,0x0ca56e05f970c61fc00b0a40b1af88a0bf44fa5c6ebd37205aeb434937aa2c3f,verified_from_rpc_swap_log
-2026-07-07 12:50:19,buy,0xdfee6a660db6e9c7021ef80bd68f99c0b2cf4444,0xdfee6a...cf4444,0.4,,,live_pending_fdv,0xf21f7dc64ac40de86723e2831665bb2e18d4f2fa9a985b2f2ba4b9b169d4841d,verified_from_rpc_swap_log
-2026-07-07 12:38:51,buy,0xeb71c6ffcc32c0aea5c15d3a8a0958fca5254444,0xeb71c6...254444,0.445,,,live_pending_fdv,0x3305c6593d76902fc6a802a83142e3fbfc47f5c13e4fe5eeda1d802d676ea8e5,verified_from_rpc_swap_log
-2026-07-07 12:30:10,buy,0x26c19f888067d5bba0c298c9f846f7be9f014444,0x26c19f...014444,0.445,,,live_pending_fdv,0x2b452017e311c7c1bc15416d0ead49105bc10b20d28cbd8e1210672c22d9989a,verified_from_rpc_swap_log
-2026-07-07 12:14:53,buy,0xc2b71605f27b684fcdb96ac9bede770122a24444,0xc2b716...a24444,0.445,,,live_pending_fdv,0x8c1d7cf94757dad1ffcdc7d45e1676998a3aad6fe39a5c2eab373a8b841c4883,verified_from_rpc_swap_log
-2026-07-07 12:11:11,buy,0xa049d66f7aee24ecc4cb6de75faacb55f0574444,0xa049d6...574444,0.995,,,live_pending_fdv,0x142691699ed9bd88c1633c562fa207be2ef989a9b83cc03e2a0228b3b2870ce9,verified_from_rpc_swap_log
