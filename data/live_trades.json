@@ -1,6 +1,19 @@
 {
-  "generated_at_utc": "2026-07-14T12:06:20Z",
+  "generated_at_utc": "2026-07-14T14:07:06Z",
   "recent_buys": [
+    {
+      "time_utc": "2026-07-14 13:18:57",
+      "event": "buy",
+      "token": "0x7edc00740cbc8a389a4683d448cd2dea8ed24444",
+      "token_short": "0x7edc00...d24444",
+      "symbol": "0x7edc00...d24444",
+      "bnb_amount": 0.3,
+      "usd_amount": "",
+      "fdv_usd": "",
+      "bucket": "live_pending_fdv",
+      "tx_hash": "0x10a781e8511b242a1909a6668254af5ec078829792636ac1c0c47b61098f9666",
+      "verification": "verified_from_rpc_swap_log"
+    },
     {
       "time_utc": "2026-07-14 11:01:49",
       "event": "buy",
@@ -1027,22 +1040,26 @@
       "bucket": "live_pending_fdv",
       "tx_hash": "0xb07882eec3aff058562a3c11b9b06665411f667decfe1c38aeb7879c8ea86ee9",
       "verification": "verified_from_rpc_swap_log"
-    },
-    {
-      "time_utc": "2026-07-10 08:40:58",
-      "event": "buy",
-      "token": "0x301749884feaf30d31461caccd703a5cd9c84444",
-      "token_short": "0x301749...c84444",
-      "symbol": "0x301749...c84444",
-      "bnb_amount": 0.77,
-      "usd_amount": "",
-      "fdv_usd": "",
-      "bucket": "live_pending_fdv",
-      "tx_hash": "0x5893d4c78c1ca922b45419b223bfed2578e733dc4accdd1c57a8c48732c0bc41",
-      "verification": "verified_from_rpc_swap_log"
     }
   ],
   "recent_positions": [
+    {
+      "last_trade_time_utc": "2026-07-14 13:18:57",
+      "first_buy_time_utc": "2026-07-14 13:18:57",
+      "token": "0x7edc00740cbc8a389a4683d448cd2dea8ed24444",
+      "token_short": "0x7edc00...d24444",
+      "symbol": "0x7edc00...d24444",
+      "buy_count": 1,
+      "sell_count": 0,
+      "buy_bnb": 0.3,
+      "sell_bnb": 0.0,
+      "realized_pnl_bnb": -0.3,
+      "realized_roi": -1.0,
+      "first_buy_fdv_usd": "",
+      "first_buy_bucket": "live_pending_fdv",
+      "open_position_flag": true,
+      "verification": "live_rpc_token_summary"
+    },
     {
       "last_trade_time_utc": "2026-07-14 11:56:23",
       "first_buy_time_utc": "2026-07-14 11:01:49",
@@ -2725,23 +2742,6 @@
       "first_buy_bucket": "live_pending_fdv",
       "open_position_flag": false,
       "verification": "live_rpc_token_summary"
-    },
-    {
-      "last_trade_time_utc": "2026-07-09 06:40:28",
-      "first_buy_time_utc": "2026-07-01 07:48:01",
-      "token": "0x9c920baf6bffcae77896a6aab49a4dec5a374444",
-      "token_short": "0x9c920b...374444",
-      "symbol": "0x9c920b...374444",
-      "buy_count": 2,
-      "sell_count": 11,
-      "buy_bnb": 1.49,
-      "sell_bnb": 2.00760866,
-      "realized_pnl_bnb": 0.51760866,
-      "realized_roi": 0.34738836,
-      "first_buy_fdv_usd": "",
-      "first_buy_bucket": "live_pending_fdv",
-      "open_position_flag": false,
-      "verification": "live_rpc_token_summary"
     }
   ],
   "daily": [
@@ -3167,6 +3167,21 @@
     }
   ],
   "live_events": [
+    {
+      "time_utc": "2026-07-14 13:18:57",
+      "block_number": 109946234,
+      "tx_hash": "0x10a781e8511b242a1909a6668254af5ec078829792636ac1c0c47b61098f9666",
+      "log_index": 13,
+      "event": "buy",
+      "token": "0x7edc00740cbc8a389a4683d448cd2dea8ed24444",
+      "token_short": "0x7edc00...d24444",
+      "symbol": "0x7edc00...d24444",
+      "bnb_amount": 0.3,
+      "token_amount": 9258969.378056718,
+      "fdv_usd": "",
+      "bucket": "live_pending_fdv",
+      "verification": "verified_from_rpc_swap_log"
+    },
     {
       "time_utc": "2026-07-14 11:56:23",
       "block_number": 109935230,
@@ -6148,21 +6163,6 @@
       "symbol": "0xf14d1c...604444",
       "bnb_amount": 0.4,
       "token_amount": 35153082.59799223,
-      "fdv_usd": "",
-      "bucket": "live_pending_fdv",
-      "verification": "verified_from_rpc_swap_log"
-    },
-    {
-      "time_utc": "2026-07-11 12:45:23",
-      "block_number": 109365898,
-      "tx_hash": "0xb37d8b37d3db5a8fd7284317f59e78e1cad945f25bbcc3db0dfe4dd862a93ef9",
-      "log_index": 20,
-      "event": "buy",
-      "token": "0xe2b2450554f9509cfbf4c167fe7822fe37c34444",
-      "token_short": "0xe2b245...c34444",
-      "symbol": "0xe2b245...c34444",
-      "bnb_amount": 0.6,
-      "token_amount": 54696763.41437069,
       "fdv_usd": "",
       "bucket": "live_pending_fdv",
       "verification": "verified_from_rpc_swap_log"
