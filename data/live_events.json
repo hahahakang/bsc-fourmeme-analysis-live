@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-07-15T06:01:21Z",
+  "generated_at_utc": "2026-07-15T08:24:20Z",
   "tracked_wallet": "0x55976c6818e4794f3e2e7179eea2cc2202811e11",
-  "latest_scanned_block": 110079803,
-  "latest_scanned_time_utc": "2026-07-15 06:01:00",
-  "latest_completed_block": 110079803,
+  "latest_scanned_block": 110097973,
+  "latest_scanned_time_utc": "2026-07-15 08:17:20",
+  "latest_completed_block": 110097973,
   "rpc_blocks_remaining": 0,
   "events": [
     {
