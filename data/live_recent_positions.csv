@@ -1,4 +1,5 @@
 last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb,sell_bnb,realized_pnl_bnb,realized_roi,first_buy_fdv_usd,first_buy_bucket,open_position_flag,verification
+2026-07-17 03:48:43,2026-07-17 03:46:57,0xff37acbd28552df1bc1459bfa50712e464b34444,0xff37ac...b34444,1,2,0.3,0.2799074,-0.0200926,-0.06697533,,live_pending_fdv,False,live_rpc_token_summary
 2026-07-16 14:47:01,2026-07-16 14:46:53,0x79473daf15b09ee51e014ea845d366f6f38a4444,0x79473d...8a4444,1,1,0.6,0.14130212,-0.45869788,-0.76449647,,live_pending_fdv,False,live_rpc_token_summary
 2026-07-16 07:52:02,2026-07-16 07:50:36,0xf47bbe25d9464f985392793087e206996ecd4444,0xf47bbe...cd4444,1,1,0.5,0.48171339,-0.01828661,-0.03657322,,live_pending_fdv,False,live_rpc_token_summary
 2026-07-15 16:11:11,2026-07-15 16:05:09,0x8e4640ec79a4fbf77c9c1562c8066cfac5244444,0x8e4640...244444,1,3,0.3,0.45583659,0.15583659,0.5194553,,live_pending_fdv,False,live_rpc_token_summary
@@ -98,4 +99,3 @@ last_trade_time_utc,first_buy_time_utc,token,symbol,buy_count,sell_count,buy_bnb
 2026-07-10 02:02:34,2026-07-09 09:35:05,0xfe9e7d4a772e10ddc31efced5fbe1c8ddaea4444,0xfe9e7d...ea4444,1,1,0.3,0.28541936,-0.01458064,-0.04860213,,live_pending_fdv,False,live_rpc_token_summary
 2026-07-10 02:02:16,2026-07-09 08:22:24,0xb3bd5d2d11578b1ce712ad6225163740c3664444,0xb3bd5d...664444,1,2,0.4,0.47828893,0.07828893,0.19572233,,live_pending_fdv,False,live_rpc_token_summary
 2026-07-09 14:55:48,2026-07-09 14:46:09,0x96a824b2b6064cf8823feb09fb9bb7df4af14444,0x96a824...f14444,2,3,0.3,0.37195606,0.07195606,0.23985353,,live_pending_fdv,False,live_rpc_token_summary
-2026-07-09 12:09:15,2026-07-09 07:20:02,0xe639bcab672af06f213febf60c414659e2f14444,0xe639bc...f14444,1,2,0.4,0.5172421,0.1172421,0.29310525,,live_pending_fdv,False,live_rpc_token_summary
