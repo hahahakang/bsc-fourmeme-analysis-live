@@ -1,11 +1,26 @@
 {
-  "generated_at_utc": "2026-07-18T15:32:24Z",
+  "generated_at_utc": "2026-07-18T16:28:17Z",
   "tracked_wallet": "0x55976c6818e4794f3e2e7179eea2cc2202811e11",
-  "latest_scanned_block": 110731763,
-  "latest_scanned_time_utc": "2026-07-18 15:32:11",
-  "latest_completed_block": 110731763,
+  "latest_scanned_block": 110739212,
+  "latest_scanned_time_utc": "2026-07-18 16:28:05",
+  "latest_completed_block": 110739212,
   "rpc_blocks_remaining": 0,
   "events": [
+    {
+      "time_utc": "2026-07-18 15:33:12",
+      "block_number": 110731899,
+      "tx_hash": "0x5cacddf2b2128363cb89560f37879fec5857d80e8c7aa576623507b78ea15afc",
+      "log_index": 10,
+      "event": "sell",
+      "token": "0x44489a6e196000c7bdd3a9a65c1fbf9472e44444",
+      "token_short": "0x44489a...e44444",
+      "symbol": "0x44489a...e44444",
+      "bnb_amount": 0.06858702808190612,
+      "token_amount": 9407311.882743597,
+      "fdv_usd": "",
+      "bucket": "live_pending_fdv",
+      "verification": "verified_from_rpc_swap_log"
+    },
     {
       "time_utc": "2026-07-18 14:44:37",
       "block_number": 110725421,
