@@ -1,10 +1,10 @@
 {
-  "generated_at_utc": "2026-08-03T17:47:19Z",
+  "generated_at_utc": "2026-08-03T22:25:34Z",
   "tracked_wallet": "0x55976c6818e4794f3e2e7179eea2cc2202811e11",
-  "latest_scanned_block": 113820023,
-  "latest_scanned_time_utc": "2026-08-03 17:46:09",
-  "latest_completed_block": 113430569,
-  "rpc_blocks_remaining": 389454,
+  "latest_scanned_block": 113851861,
+  "latest_scanned_time_utc": "2026-08-03 21:44:57",
+  "latest_completed_block": 113480569,
+  "rpc_blocks_remaining": 371292,
   "events": [
     {
       "time_utc": "2026-08-03 15:14:27",
